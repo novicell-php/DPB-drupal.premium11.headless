@@ -1,6 +1,6 @@
 {
   "private": true,
-  "packageManager": "npm@latest",
+  "packageManager": "npm@9.8.1",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
