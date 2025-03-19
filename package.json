@@ -37,6 +37,7 @@
     "nuxt-icons": "^3.2.1",
     "pinia": "3.0.1",
     "swiper": "^8.4.6",
+    "unhead": "^1.1.2",
     "uuid": "^11.0.5",
     "vee-validate": "^4.7.3",
     "vue-tweet": "^2.2.1"
