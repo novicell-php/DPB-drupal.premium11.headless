@@ -6,7 +6,7 @@ name: frontend
 
 # The runtime the application uses.
 # Complete list of available runtimes: https://docs.platform.sh/create-apps/app-reference.html#types
-type: 'nodejs:18'
+type: 'nodejs:20'
 
 # The web key configures the web server running in front of your app.
 # More information: https://docs.platform.sh/create-apps/app-reference.html#web
@@ -41,6 +41,5 @@ hooks:
   # The build hook is run after any build flavor.
   # More information: https://docs.platform.sh/create-apps/hooks/hooks-comparison.html#build-hook
   build: |
-    npm install --omit=dev
-    npx nuxt prepare || npm run prepare
+    npm run setup-assets
     npm run build
