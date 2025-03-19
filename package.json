@@ -1,6 +1,8 @@
 {
   "private": true,
-  "packageManager": "npm@9.8.1",
+  "engines": {
+    "node": ">=21.4.0"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
