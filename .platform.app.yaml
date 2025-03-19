@@ -42,5 +42,5 @@ hooks:
   # More information: https://docs.platform.sh/create-apps/hooks/hooks-comparison.html#build-hook
   build: |
     npm install --omit=dev
-    npx nuxt prepare
+    npx nuxt prepare || npm run prepare
     npm run build
