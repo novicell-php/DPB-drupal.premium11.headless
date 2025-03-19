@@ -1,20 +1,10 @@
 <script setup lang="ts">
-import useCookieReply from '~/composables/useCookieReply';
-
-const { hasMarketingConsent } = useCookieReply();
-
 const props = defineProps({
   blockData: {
     type: Object,
     required: true,
   },
 });
-
-const handleUpdateConsent = () => {
-  const cookiebot = ((window as any) && (window as any).Cookiebot) || {};
-
-  cookiebot.show();
-};
 
 const seeVideo = ref(false);
 const showVideo = () => {
@@ -24,16 +14,8 @@ const showVideo = () => {
 
 <template>
   <ClientOnly>
-    <div
-      class="video"
-      :class="{
-        'video--with-consent':
-          !hasMarketingConsent || blockData?.field_require_cookie_consent,
-      }"
-    >
-      <template
-        v-if="hasMarketingConsent || !blockData?.field_require_cookie_consent"
-      >
+    <div class="video">
+      <template v-if="blockData?.field_video_media !== null">
         <div class="video__wrapper">
           <img
             v-show="!seeVideo"
@@ -88,15 +70,6 @@ const showVideo = () => {
             blockData.field_video_media?.field_copyright ||
             blockData?.field_copyright
           }})
-        </div>
-      </template>
-      <template v-else>
-        <div class="consent-box">
-          {{ $t('block.video.no-consent-message') }}
-          <br /><br />
-          <button class="button" @click="handleUpdateConsent">
-            {{ $t('block.video.update-consent') }}
-          </button>
         </div>
       </template>
     </div>
