@@ -16,3 +16,4 @@ jobs:
           repository: novicell-php/DPB-drupal.premium11.headless
           event-type: update-submodule
           client-payload: '{"submodule": "frontend", "branch": "${{ github.ref_name }}", "commit": "${{ github.sha }}"}'
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
