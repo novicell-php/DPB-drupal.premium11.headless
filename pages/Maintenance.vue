@@ -16,10 +16,6 @@ useHead({
     },
   ],
 });
-
-setTimeout(() => {
-  window.location.href = '/';
-}, 90000);
 </script>
 
 <template>

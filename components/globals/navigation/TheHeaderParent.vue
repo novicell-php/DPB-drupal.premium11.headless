@@ -1,18 +1,17 @@
-<script setup lang="ts">
+<script setup>
 import { useHeaderDataStore } from '~/stores/headerData';
 const headerDataStore = useHeaderDataStore();
-
-if (headerDataStore.headerData === null) {
-  headerDataStore.getHeaderData();
-}
 </script>
 
 <template>
-  <div class="header-parent" v-if="headerDataStore.headerData">
+  <div class="header-parent">
     <div class="container">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-          <TheHeader :data="headerDataStore.headerData" />
+          <TheHeader
+            v-if="headerDataStore.headerData"
+            :data="headerDataStore.headerData"
+          />
         </div>
       </div>
     </div>

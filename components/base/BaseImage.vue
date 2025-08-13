@@ -58,9 +58,6 @@ const processedComponentTypeClass = computed(() => {
       class="image__caption"
     >
       {{ caption && caption !== null ? caption : '' }}
-      <span v-if="image?.field_copyright !== null"
-        >(© {{ image?.field_copyright }})</span
-      >
     </figcaption>
   </figure>
 </template>

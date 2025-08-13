@@ -1,3 +1,24 @@
+<script setup>
+const props = defineProps({
+  blockData: Object,
+});
+
+// Checking if overlay is turned on without image
+const isDarkText = computed(() => {
+  return (
+    !props.blockData?.field_hero?.field_overlay &&
+    props.blockData?.field_hero?.field_background === null
+  );
+});
+
+const isDarkBg = computed(() => {
+  return (
+    props.blockData?.field_hero?.field_overlay &&
+    props.blockData?.field_hero?.field_background === null
+  );
+});
+</script>
+
 <template>
   <div class="hero" :class="{ 'hero--dark': isDarkBg }">
     <BaseMedia
@@ -33,27 +54,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-const props = defineProps({
-  blockData: Object,
-});
-
-// Checking if overlay is turned on without image
-const isDarkText = computed(() => {
-  return (
-    !props.blockData?.field_hero?.field_overlay &&
-    props.blockData?.field_hero?.field_background === null
-  );
-});
-
-const isDarkBg = computed(() => {
-  return (
-    props.blockData?.field_hero?.field_overlay &&
-    props.blockData?.field_hero?.field_background === null
-  );
-});
-</script>
 
 <style lang="postcss" scoped>
 .hero {

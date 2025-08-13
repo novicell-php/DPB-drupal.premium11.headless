@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 defineProps({
   error: { type: Object, required: true },
 });
@@ -40,7 +40,7 @@ const showErrorDetails =
         </div>
       </div>
     </div>
-    <TheFooterParent />
+    <TheFooter />
   </div>
 </template>
 

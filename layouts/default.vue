@@ -3,6 +3,6 @@
   <div class="app">
     <slot></slot>
   </div>
-  <TheFooterParent />
+  <TheFooter />
   <TheModal />
 </template>
