@@ -60,16 +60,14 @@ export default defineNuxtConfig({
     '~/components/globals/navigation',
     '~/components/views',
   ],
+  css: ['/assets/css/app.css'],
 
   webpack: {
     extractCSS: true,
   },
 
-  css: ['/assets/css/app.css'],
-
   postcss: {
     config: false,
-
     plugins: {
       ...postcssConfig({
         'postcss-preset-env': {
@@ -80,17 +78,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@pinia/nuxt', 'nuxt-icons', '@nuxtjs/i18n'],
-
-  i18n: {
-    vueI18n: './i18n.config.ts',
-  },
-
-  vite: {
-    optimizeDeps: {
-      exclude: ['vee-validate'],
-    },
-  },
+  modules: ['@pinia/nuxt', 'nuxt-icons'],
 
   optimization: {
     splitChunks: {

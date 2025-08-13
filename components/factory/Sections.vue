@@ -46,7 +46,6 @@ const assignMdColHandler = (colValue: string, colIndex: string | number) => {
     <div
       v-for="section in sections"
       :key="section.id"
-      class="dark"
       :class="[
         'section',
         section.layout_id,
@@ -64,7 +63,7 @@ const assignMdColHandler = (colValue: string, colIndex: string | number) => {
         :class="[
           'container',
           section.layout_settings.column_width === 'section--width-full'
-            ? 'container--full'
+            ? 'container--fluid'
             : '',
           section.layout_settings.column_width === 'section--width-narrow'
             ? 'container--narrow'
@@ -103,39 +102,12 @@ const assignMdColHandler = (colValue: string, colIndex: string | number) => {
 .section {
   padding-top: var(--section-spacing-mobile);
   padding-bottom: var(--section-spacing-mobile);
+  background-color: var(--theme-background-color);
+  color: var(--theme-text-color);
 
   @media (--viewport-md-min) {
     padding-top: var(--section-spacing);
     padding-bottom: var(--section-spacing);
-  }
-
-  &.layout_twocol_section {
-    .col-xs-12:first-child {
-      margin-bottom: 40px;
-
-      @media (--viewport-sm-min) {
-        margin-bottom: 44px;
-      }
-
-      @media (--viewport-md-min) {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  &.layout_threecol_section {
-    .col-xs-12:first-child,
-    .col-xs-12:nth-child(2) {
-      margin-bottom: 20px;
-
-      @media (--viewport-sm-min) {
-        margin-bottom: 44px;
-      }
-
-      @media (--viewport-md-min) {
-        margin-bottom: 0;
-      }
-    }
   }
 
   &--no-spacing {
@@ -160,18 +132,34 @@ const assignMdColHandler = (colValue: string, colIndex: string | number) => {
   }
 
   &--spacing-top-medium {
-    padding-top: calc(var(--section-spacing-mobile) * 1.5);
+    padding-top: var(--section-spacing-mobile);
+
+    @media (--viewport-sm-min) {
+      padding-top: var(--section-spacing);
+    }
 
     @media (--viewport-md-min) {
       padding-top: calc(var(--section-spacing) * 1.5);
     }
+
+    @media (--viewport-lg-min) {
+      padding-top: calc(var(--section-spacing) * 2);
+    }
   }
 
   &--spacing-top-large {
-    padding-top: calc(var(--section-spacing) * 1.5);
+    padding-top: var(--section-spacing-mobile);
+
+    @media (--viewport-sm-min) {
+      padding-top: var(--section-spacing);
+    }
 
     @media (--viewport-md-min) {
-      padding-top: calc(var(--section-spacing) * 2);
+      padding-top: calc(var(--section-spacing) * 3);
+    }
+
+    @media (--viewport-lg-min) {
+      padding-top: calc(var(--section-spacing) * 4);
     }
   }
 
@@ -184,18 +172,34 @@ const assignMdColHandler = (colValue: string, colIndex: string | number) => {
   }
 
   &--spacing-bottom-medium {
-    padding-bottom: calc(var(--section-spacing-mobile) * 1.5);
+    padding-bottom: var(--section-spacing-mobile);
+
+    @media (--viewport-sm-min) {
+      padding-bottom: var(--section-spacing);
+    }
 
     @media (--viewport-md-min) {
       padding-bottom: calc(var(--section-spacing) * 1.5);
     }
+
+    @media (--viewport-lg-min) {
+      padding-bottom: calc(var(--section-spacing) * 2);
+    }
   }
 
   &--spacing-bottom-large {
-    padding-bottom: calc(var(--section-spacing) * 1.5);
+    padding-bottom: var(--section-spacing-mobile);
+
+    @media (--viewport-sm-min) {
+      padding-bottom: var(--section-spacing);
+    }
 
     @media (--viewport-md-min) {
-      padding-bottom: calc(var(--section-spacing) * 2);
+      padding-bottom: calc(var(--section-spacing) * 3);
+    }
+
+    @media (--viewport-lg-min) {
+      padding-bottom: calc(var(--section-spacing) * 4);
     }
   }
 

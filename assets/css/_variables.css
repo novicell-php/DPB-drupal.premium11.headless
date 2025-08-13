@@ -5,3 +5,11 @@
 @import 'variables/_typography.css';
 @import 'variables/_grid.css';
 @import 'variables/_swiper.css';
+@import 'themes/theme.css';
+@import 'themes/theme-primary.css';
+@import 'themes/theme-secondary.css';
+@import 'themes/theme-dark.css';
+@import 'themes/theme-red.css';
+@import 'themes/theme-green.css';
+@import 'themes/theme-yellow.css';
+@import 'themes/theme-seashell.css';

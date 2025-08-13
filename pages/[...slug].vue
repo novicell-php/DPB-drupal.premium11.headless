@@ -1,70 +1,67 @@
-<script lang="ts" setup>
-import NotFoundView from '~/components/views/NotFoundView.vue';
-import { seoCanonicalUrlHandler } from '~/utils/seoCanonicalUrlHandler';
-
-const { useContent } = useContentApi();
-
+<script setup>
+import { useHeaderDataStore } from '~/stores/headerData';
+import { useFooterDataStore } from '~/stores/footerData';
+import PageNotFound from '../pages/PageNotFound.vue';
 definePageMeta({
   layout: 'default',
 });
 
-// const router = useRouter();
-// const config = useRuntimeConfig().public;
+const headerStore = useHeaderDataStore();
+const footerStore = useFooterDataStore();
+
 const route = useRoute();
 const encodedPath = encodeURIComponent(route.path);
 
-// // fetching page data
-let error: any = null;
-let redirectUrl = ref(null);
+const regionsToFetch = ref(['footer', 'header', 'content']);
 
-const { data } = await useAsyncData(encodedPath, () =>
-  useContent(route.path)
-    .then((res) => {
-      if (res.type === 'redirect') {
-        redirectUrl.value = res.target;
-      }
+const { data, error } = await useAsyncData(encodedPath, async () => {
+  const res = await useMultipleRegions(route.path, regionsToFetch.value);
 
-      return res;
-    })
-    .catch((err) => {
-      error = err;
-      return null;
-    }),
-);
-
-if (error || !data.value) {
-  if (!error || !error.statusCode) {
-    navigateTo('/maintenance');
-  }
-  // if BE is down
-  if (error.statusCode.toString().startsWith('5')) {
-    navigateTo('/maintenance');
+  if (res.header?.navigation) {
+    headerStore.setHeaderData(res.header.navigation);
   }
 
-  // if forbidden to see
-  if (error.statusCode === 403) {
-    navigateTo('/forbidden');
-    window.location.reload();
+  if (res.footer?.footer) {
+    footerStore.setFooterData(res.footer.footer);
   }
 
-  // stop code from executing further
-  throw createError({
-    statusCode: error.statusCode,
-    statusMessage: error.message,
-  });
+  return res;
+});
+
+// Handle errors and null data
+const showNotFound = ref(false);
+
+if (error.value || data.value === null) {
+  const status = error.value?.statusCode;
+
+  if (!status || status.toString().startsWith('5')) {
+    await navigateTo('/maintenance');
+  } else if (status === 403) {
+    await navigateTo('/forbidden');
+  } else {
+    showNotFound.value = true;
+  }
 }
 
-const viewData = data.value.content;
-
-// redirect
-if (redirectUrl.value) {
-  await navigateTo(redirectUrl.value);
+if (data.value?.type === 'redirect') {
+  await navigateTo(data.value.target);
 }
 
-const pageBlockHeaderData = viewData?.field_header;
+const viewData = computed(() => {
+  if (!data.value || !data.value.content || !data.value.content.content) {
+    return null;
+  }
+  return data.value.content.content;
+});
+
+console.log('View Data:', viewData.value);
+
+const pageBlockHeaderData = computed(() => {
+  return viewData.value?.field_header || null;
+});
 
 // Dynamically import components
-const renderLayoutBlock = (viewName: string) => {
+const renderLayoutBlock = (viewName) => {
   return defineAsyncComponent({
     loader: () =>
       import(`@/components/views/${viewName}View.vue`).catch((err) => {
@@ -81,72 +78,59 @@ const renderLayoutBlock = (viewName: string) => {
   });
 };
 
-// TODO: Redo this part with actual out-of-box properties in the kit and refactored vars to be cleaner.
-// SEO/META
-
-const openGraph = ref(viewData?.field_meta_tags?.html_head);
-const seoData = ref(viewData?.field_meta_tags);
-const seoHeadLinkDataEN = ref(
-  seoData?.value?.html_head?.alternate_en?.attributes,
-);
-const seoHeadLinkDataDA = ref(
-  seoData?.value?.html_head?.alternate_da?.attributes,
-);
-
-const canonicalUrl = computed(() => {
-  return seoCanonicalUrlHandler(
-    openGraph?.value?.canonical_url?.attributes?.href ?? '',
-    viewData?.is_frontpage,
-  );
+// Safe access to SEO data
+const seoData = computed(() => {
+  return viewData.value?.field_meta_tags?.html_head || null;
 });
 
-useHead({
-  htmlAttrs: {
-    lang: viewData?.langcode || 'da',
-  },
+const pageTitle = computed(() => {
+  return seoData.value?.title?.attributes?.content || 'Page Not Found';
+});
 
-  title:
-    seoData?.value?.html_head?.title?.attributes?.content ??
-    viewData?.label ??
-    '',
-  meta: [
-    {
-      name: 'description',
-      content:
-        seoData?.value?.html_head?.description?.attributes?.content ?? '',
-    },
-    {
-      name: 'robots',
-      content: seoData?.value?.html_head?.robots?.attributes?.content ?? '',
-    },
-  ],
+const canonicalUrl = computed(() => {
+  return seoData.value?.canonical_url?.attributes?.href || '';
+});
 
-  link: [
-    {
-      rel: 'canonical',
-      href: canonicalUrl.value,
-    },
-    {
-      rel: seoHeadLinkDataEN?.value?.rel,
-      href: seoHeadLinkDataEN?.value?.href,
-      hreflang: seoHeadLinkDataEN?.value?.hreflang,
-    },
-    {
-      rel: seoHeadLinkDataDA?.value?.rel,
-      href: seoHeadLinkDataDA?.value?.href,
-      hreflang: seoHeadLinkDataDA?.value?.hreflang,
-    },
-  ],
+// Only set head data if we have valid view data
+watchEffect(() => {
+  if (viewData.value && !showNotFound.value) {
+    useHead({
+      title: pageTitle.value,
+      meta: [
+        {
+          name: 'description',
+          content: viewData.value.field_description || '',
+        },
+        {
+          name: 'robots',
+          content: 'noindex, nofollow',
+        },
+      ],
+      link: [
+        {
+          rel: 'canonical',
+          href: canonicalUrl.value,
+        },
+      ],
+    });
+  }
 });
 </script>
 
 <template>
   <main>
+    <PageNotFound v-if="showNotFound || !viewData" />
     <component
+      v-else
       :is="renderLayoutBlock(viewData.bundle)"
-      v-if="viewData"
       :data="viewData"
       :page-header="pageBlockHeaderData"
     />
   </main>
 </template>
+
+<style lang="postcss">
+main {
+  padding-top: var(--header-height);
+}
+</style>

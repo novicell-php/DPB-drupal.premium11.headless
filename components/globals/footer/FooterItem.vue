@@ -23,7 +23,8 @@ const hasChildren = computed(() => {
   <div class="col-footer-item footer-item--heading">
     <div
       :class="
-        (!node?.url ? 'footer-headline ' : '') + (showAcc ? 'active-acc' : '')
+        ((!node?.url ? 'footer-headline ' : '') + (showAcc ? 'active-acc' : ''),
+        'footer-item__wrapper')
       "
     >
       <div v-if="!node?.url" class="footer-item__link footer-item__link--title">
@@ -35,7 +36,7 @@ const hasChildren = computed(() => {
         :to="node?.url"
         class="footer-item__link"
         :class="!node?.url ? 'footer-item__link--title' : ''"
-        :aria-label="'Go to' + node?.title"
+        :aria-label="'Visit' + node?.title"
       >
         {{ node?.title }}
       </NuxtLink>
@@ -52,7 +53,7 @@ const hasChildren = computed(() => {
         :to="child?.url"
         class="footer-item__link"
         :class="child?.description ? 'footer-item__link--tooltip' : ''"
-        :aria-label="'Go to' + child?.title"
+        :aria-label="'Visit' + child?.title"
       >
         {{ child?.title }}
 
@@ -73,9 +74,12 @@ const hasChildren = computed(() => {
 }
 
 .footer-item {
+  &__wrapper {
+    padding: 5px;
+  }
+
   &__link {
-    padding: 0.4em 0;
-    color: var(--color-white);
+    color: var(--color-text);
     text-decoration: none;
 
     &:hover {

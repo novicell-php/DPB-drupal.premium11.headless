@@ -7,12 +7,11 @@ const props = defineProps({
 });
 </script>
 
-<template v-if="footerMenuData.items">
+<template>
   <FooterItem
-    v-for="(footerItem, index) in footerMenuData.items"
+    v-if="footerMenuData"
+    v-for="(footerItem, index) in footerMenuData"
     :key="index"
     :node="footerItem"
   />
 </template>
-
-<style lang="postcss" scoped></style>
