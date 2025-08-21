@@ -113,6 +113,10 @@ const removeNoScroll = () => {
         opacity: 1;
       }
     }
+
+    &:last-child {
+      padding-right: 0;
+    }
   }
 
   &__link {
