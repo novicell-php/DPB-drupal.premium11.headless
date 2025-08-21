@@ -71,25 +71,24 @@ const limitedPages = computed(() => {
 
 <style lang="postcss" scoped>
 .pager {
+  padding-top: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &__page {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     margin: 0 4px;
     font-weight: 500;
     font-size: 14px;
-    background-color: var(--color-white);
+    background-color: transparent;
     border: none;
-    border-radius: 30px;
 
     &--active {
-      width: 52px;
-      height: 52px;
-      color: var(--color-white);
-      background: var(--color-text);
+      color: var(--theme-background-color);
+      background: var(--theme-text-color);
+      border: 1px solid var(--theme-background-color);
       border: none;
       cursor: default;
       pointer-events: none;
@@ -101,9 +100,8 @@ const limitedPages = computed(() => {
       align-items: center;
       justify-content: center;
       margin-right: 0;
-      color: var(--color-text);
+      color: var(--theme-text-color);
       background: transparent;
-      border: 1px solid var(--color-gray-25);
       cursor: pointer;
       pointer-events: auto;
     }
@@ -121,8 +119,13 @@ const limitedPages = computed(() => {
       transform: rotate(270deg);
     }
 
+    transition:
+      border 1s ease,
+      opacity 1s ease;
+
     &:hover {
-      opacity: 0.5;
+      opacity: 0.7;
+      border: 1px solid var(--theme-text-color);
     }
   }
 }

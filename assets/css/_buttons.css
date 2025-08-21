@@ -16,7 +16,6 @@
   text-decoration: none;
   background-color: var(--color-black);
   border: 1px solid var(--color-black);
-  border-radius: 100px;
   cursor: pointer;
   transition:
     background-color 0.2s,
@@ -134,24 +133,23 @@
 
   &--ghost {
     padding: 14px 24px;
-    color: var(--color-text);
+    color: var(--theme-text-color);
     font-weight: 500;
     font-size: 14px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
     background-color: transparent;
-    border: 1px solid var(--color-gray-25);
-    border-radius: 100px;
+    border: 1px solid var(--theme-text-color);
 
     &:hover {
-      color: var(--color-white);
-      background-color: var(--color-text);
+      color: var(--theme-text-color);
+      background-color: var(--theme-background-color);
       opacity: 1;
     }
 
     &.button {
       &--primary {
-        color: var(--color-primary);
+        color: var(--theme-text-color);
       }
 
       &--success {
@@ -191,7 +189,6 @@
     border-top: none;
     border-right: none;
     border-left: none;
-    border-radius: 0;
 
     &:hover {
       color: var(--color-text);

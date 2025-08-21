@@ -8,39 +8,35 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="articles">Insert Base article here</div>
+  <div class="articles">
+    <div class="articles__content">
+      <BaseArticle
+        v-for="item in blockData.field_articles.entities"
+        :key="item.id"
+        :blockData="item"
+      />
+    </div>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
 .articles {
-  display: block;
-
-  @media (--viewport-ms-min) {
+  &__content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px 15px;
 
-  @media (--viewport-sm-min) {
-    grid-template-columns: 1fr 1fr;
-    gap: 44px;
-  }
-
-  @media (--viewport-md-min) {
-    grid-template-columns: 1fr 1fr 1fr;
-
-    .column-widths--50-50 & {
-      grid-template-columns: 1fr 1fr;
+    @media (--viewport-lg-max) {
+      grid-template-columns: repeat(3, 1fr);
     }
 
-    .column-widths--33-33-33 & {
-      display: block;
+    @media (--viewport-md-max) {
+      grid-template-columns: repeat(2, 1fr);
     }
-  }
 
-  :deep(.article) {
-    @media (--viewport-ms-min) {
-      margin-bottom: 0;
+    @media (--viewport-sm-max) {
+      grid-template-columns: 1fr;
+      gap: 50px;
     }
   }
 }

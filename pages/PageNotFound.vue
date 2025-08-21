@@ -1,29 +1,13 @@
-<template>
-  <div class="not-found-page">
-    <div class="container">
-      <div class="content">
-        <div class="error-code">404</div>
-        <h1 class="title">Page Not Found</h1>
-        <p class="description">
-          Sorry, the page you are looking for doesn't exist or has been moved.
-        </p>
-        <div class="actions">
-          <NuxtLink to="/" class="btn btn-primary"> Go Home </NuxtLink>
-          <button @click="goBack" class="btn btn-secondary">Go Back</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
+import { useHeaderDataStore } from '~/stores/headerData';
+import { useFooterDataStore } from '~/stores/footerData';
+
 const router = useRouter();
 
 const goBack = () => {
   router.back();
 };
 
-// Set page title
 useHead({
   title: '404 - Page Not Found',
   meta: [
@@ -37,7 +21,41 @@ useHead({
     },
   ],
 });
+
+const headerStore = useHeaderDataStore();
+const footerStore = useFooterDataStore();
+
+const regionsToFetch = ref(['footer', 'header']);
+const { data } = await useAsyncData('Home', async () => {
+  const res = await useMultipleRegions('/', regionsToFetch.value);
+
+  if (res) {
+    const { header, footer } = res;
+    header?.navigation && headerStore.setHeaderData(header.navigation);
+    footer?.footer && footerStore.setFooterData(footer.footer);
+  }
+
+  return res;
+});
 </script>
+
+<template>
+  <div class="not-found-page">
+    <div class="container">
+      <div class="not-found-page__content">
+        <div class="not-found-page__code">404</div>
+        <h1 class="not-found-page__title">Page Not Found</h1>
+        <p class="not-found-page__description">
+          Sorry, the page you are looking for doesn't exist or has been moved.
+        </p>
+        <div class="not-found-page__actions">
+          <NuxtLink to="/" class="btn btn-primary"> Go Home </NuxtLink>
+          <button @click="goBack" class="btn btn-secondary">Go Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="postcss" scoped>
 .not-found-page {
@@ -45,56 +63,56 @@ useHead({
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-.container {
-  max-width: 600px;
-  width: 100%;
-}
-
-.content {
-  text-align: center;
-}
-
-.error-code {
-  font-size: 8rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  line-height: 1;
-  margin-bottom: 1rem;
-
-  @media (max-width: 768px) {
-    font-size: 6rem;
+  &__container {
+    max-width: 600px;
+    width: 100%;
   }
-}
 
-.title {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 1rem;
-
-  @media (max-width: 768px) {
-    font-size: 2rem;
+  &__content {
+    text-align: center;
   }
-}
 
-.description {
-  font-size: 1.125rem;
-  color: var(--color-text-secondary);
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
+  &__code {
+    font-size: 8rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+    margin-bottom: 1rem;
 
-  @media (max-width: 768px) {
-    font-size: 1rem;
+    @media (max-width: 768px) {
+      font-size: 6rem;
+    }
   }
-}
 
-.actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+  &__title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  &__description {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
 
 .btn {
@@ -114,7 +132,7 @@ useHead({
 
 .btn-primary {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-white);
 
   &:hover {
     background-color: var(--color-primary-dark);
