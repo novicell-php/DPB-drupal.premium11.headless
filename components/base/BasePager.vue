@@ -84,6 +84,7 @@ const limitedPages = computed(() => {
     font-size: 14px;
     background-color: transparent;
     border: none;
+    color: var(--theme-text-color);
 
     &--active {
       color: var(--theme-background-color);
