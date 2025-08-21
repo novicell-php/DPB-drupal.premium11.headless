@@ -12,17 +12,28 @@ const footerStore = useFooterDataStore();
 const route = useRoute();
 const encodedPath = encodeURIComponent(route.path);
 
-const regionsToFetch = ref(['footer', 'header', 'content']);
+const hasFetchedLayoutRegions = useState(
+  'hasFetchedLayoutRegions',
+  () => false,
+);
+const siteAnnouncements = useState('siteAnnouncements', () => null);
+const regionsToFetch = ref(
+  hasFetchedLayoutRegions.value ? ['content'] : ['footer', 'header', 'content'],
+);
+
+function handleLayoutRegions(res) {
+  const { header, footer } = res;
+  header?.navigation && headerStore.setHeaderData(header.navigation);
+  siteAnnouncements.value = header?.announcements || null;
+  footer?.footer && footerStore.setFooterData(footer.footer);
+  hasFetchedLayoutRegions.value = true;
+}
 
 const { data, error } = await useAsyncData(encodedPath, async () => {
   const res = await useMultipleRegions(route.path, regionsToFetch.value);
 
-  if (res.header?.navigation) {
-    headerStore.setHeaderData(res.header.navigation);
-  }
-
-  if (res.footer?.footer) {
-    footerStore.setFooterData(res.footer.footer);
+  if (!hasFetchedLayoutRegions.value) {
+    handleLayoutRegions(res);
   }
 
   return res;
@@ -48,10 +59,17 @@ if (data.value?.type === 'redirect') {
 }
 
 const viewData = computed(() => {
-  if (!data.value || !data.value.content || !data.value.content.content) {
-    return null;
+  if (!data.value) return null;
+
+  if (data.value.content?.content) {
+    return data.value.content.content;
   }
-  return data.value.content.content;
+
+  if (data.value.content) {
+    return data.value.content;
+  }
+
+  return null;
 });
 
 console.log('View Data:', viewData.value);
@@ -119,6 +137,10 @@ watchEffect(() => {
 
 <template>
   <main>
+    <Announcements
+      v-if="siteAnnouncements"
+      :announcements="siteAnnouncements"
+    />
     <PageNotFound v-if="showNotFound || !viewData" />
     <component
       v-else

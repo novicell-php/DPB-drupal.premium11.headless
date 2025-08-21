@@ -88,6 +88,11 @@ const removeNoScroll = () => {
 </template>
 
 <style lang="postcss" scoped>
+.router-link-exact-active {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary) !important;
+}
+
 .header-item {
   position: relative;
 
@@ -115,6 +120,7 @@ const removeNoScroll = () => {
     text-decoration: none;
     font-size: 16px;
     transition: color 0.2s;
+    border-bottom: 2px solid transparent;
 
     &:hover {
       color: var(--color-primary);
