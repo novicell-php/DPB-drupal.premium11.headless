@@ -107,7 +107,7 @@ const props = defineProps({
   }
 
   &__button {
-    margin-top: 35px;
+    margin-top: 10px;
   }
 }
 </style>
