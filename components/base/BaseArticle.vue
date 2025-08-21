@@ -103,6 +103,7 @@ const props = defineProps({
     padding: 10px 0;
     font-size: 1rem;
     line-height: 1.5;
+    min-height: 130px;
   }
 
   &__button {
