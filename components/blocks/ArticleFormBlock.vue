@@ -240,7 +240,7 @@ const updateContent = async () => {
       padding: 10px;
       font-size: 16px;
       line-height: 1.5;
-      border: 1px solid transparent;
+      border: 1px solid var(--theme-text-color);
       background-color: var(--color-white);
       color: var(--theme-text-color);
       width: 100%;
@@ -255,9 +255,7 @@ const updateContent = async () => {
         border: 1px solid var(--theme-text-color);
       }
 
-      /* focus */
       &:focus {
-        outline: none;
         border: 1px solid var(--theme-text-color);
         box-shadow: 0 0 8px 2px
           color-mix(in srgb, var(--theme-background-color), white 30%);
@@ -269,7 +267,7 @@ const updateContent = async () => {
       padding-bottom: 0;
       font-size: 16px;
       line-height: 40px;
-      border: 1px solid transparent;
+      border: 1px solid var(--theme-text-color);
       background-color: var(--color-white);
       cursor: pointer;
       width: 100%;
@@ -285,7 +283,6 @@ const updateContent = async () => {
       display: flex;
       align-items: center;
       vertical-align: middle;
-      outline: none;
       transition:
         border 0.3s ease,
         box-shadow 0.3s ease;
@@ -295,7 +292,6 @@ const updateContent = async () => {
       }
 
       &:focus {
-        outline: none;
         border: 1px solid var(--theme-text-color);
         box-shadow: 0 0 8px 2px
           color-mix(in srgb, var(--theme-background-color), white 30%);
