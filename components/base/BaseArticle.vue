@@ -16,11 +16,15 @@ const props = defineProps({
         <div class="base-article__date" v-if="blockData.field_list_date">
           {{ blockData.field_list_date }}
         </div>
-        <BaseImage
+        <div
           v-if="blockData.field_list_media?.field_media_image"
-          :image="blockData.field_list_media"
           class="base-article__image"
-        />
+        >
+          <BaseImage :image="blockData.field_list_media" />
+          <span class="base-article__type-label">{{
+            blockData.field_article_type.label
+          }}</span>
+        </div>
         <div
           role="heading"
           aria-level="3"
@@ -84,8 +88,20 @@ const props = defineProps({
     }
   }
 
+  &__type-label {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--color-white);
+    padding: 2px 10px;
+    font-size: 12px;
+    pointer-events: none;
+    letter-spacing: 1px;
+  }
+
   &__date {
-    font-size: 0.875rem;
+    font-size: 13px;
     text-align: center;
     margin-bottom: 10px;
     font-family: 'Courier New', Courier, monospace;
@@ -96,12 +112,12 @@ const props = defineProps({
 
   &__title {
     padding-top: 10px;
-    font-size: 1.5rem;
+    font-size: 20px;
   }
 
   &__content {
     padding: 10px 0;
-    font-size: 1rem;
+    font-size: 16px;
     line-height: 1.5;
     min-height: 130px;
   }
