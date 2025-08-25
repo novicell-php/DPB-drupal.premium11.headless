@@ -215,6 +215,7 @@ const updateContent = async () => {
       gap: 6px;
       font-size: 16px;
       cursor: pointer;
+      width: fit-content;
     }
 
     &__checkbox {
