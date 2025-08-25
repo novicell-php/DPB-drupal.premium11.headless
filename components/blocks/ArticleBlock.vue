@@ -8,7 +8,14 @@ const props = defineProps({
 </script>
 
 <template>
-  <div>Insert Base article here</div>
+  <div class="article-block">
+    <BaseArticle
+      v-for="(article, index) in blockData.field_articles"
+      :key="index"
+      :blockData="article"
+      class="article-block__article"
+    />
+  </div>
 </template>
 
 <style lang="postcss" scoped>
