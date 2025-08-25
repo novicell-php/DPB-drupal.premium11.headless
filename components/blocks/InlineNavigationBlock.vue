@@ -44,7 +44,10 @@ const breakpoints = {
           :key="item.id"
           class="inline-navigation__slide"
         >
-          Insert Base article here
+          <BaseArticle
+            :blockData="item"
+            class="inline-navigation__article"
+          ></BaseArticle>
         </SwiperSlide>
       </Swiper>
     </ClientOnly>

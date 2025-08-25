@@ -1,4 +1,7 @@
 <script setup>
+import { scrollTo } from '~/utils/scrollTo';
+import { v4 as uuidv4 } from 'uuid';
+
 const config = useRuntimeConfig().public;
 
 const props = defineProps({
@@ -8,8 +11,9 @@ const props = defineProps({
   },
 });
 
-console.log('ArticlesFormBlock props:', props.blockData);
+const id = ref(uuidv4());
 const pager = ref(props.blockData.field_articles_form.content.pager);
+console.log('ArticlesFormBlock props:', props.blockData);
 
 const object = {};
 // const facets = props.blockData.field_articles_form.facets;
@@ -46,7 +50,7 @@ const updateContent = async () => {
   loading.value = true;
 
   const params = {
-    pagination: state.value.page,
+    page: state.value.page,
   };
 
   // Object.keys({ ...state.value }).map((key) => {
@@ -66,21 +70,26 @@ const updateContent = async () => {
     keepalive: true,
   });
 
-  console.log('ArticlesFormBlock response:', response);
-
   dynamicContent.value = response.content;
   pager.value = response.pager;
   loading.value = false;
+  scrollTo(`#${id.value}`, {
+    behavior: 'smooth',
+    block: 'start',
+  });
 };
 </script>
 
 <template>
-  <div class="article-overview">
-    <div
-      class="article-overview__content"
-      :class="{ 'article-overview__content--loading': loading }"
-    >
-      <BaseArticle v-for="item in content" :key="item.id" :blockData="item" />
+  <div class="article-overview" :id="id">
+    <div style="position: relative">
+      <div
+        class="article-overview__content"
+        :class="{ 'article-overview__content--loading': loading }"
+      >
+        <BaseArticle v-for="item in content" :key="item.id" :blockData="item" />
+      </div>
+      <BaseLoading v-if="loading" class="article-overview__loading" />
     </div>
 
     <BasePager
@@ -93,6 +102,7 @@ const updateContent = async () => {
 
 <style lang="postcss" scoped>
 .article-overview {
+  position: relative;
   /* &__filters {
     display: flex;
     flex-wrap: wrap;
@@ -124,6 +134,14 @@ const updateContent = async () => {
       transition: filter 0.3s ease-in-out;
       pointer-events: none;
     }
+  }
+
+  &__loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
   }
 }
 </style>
