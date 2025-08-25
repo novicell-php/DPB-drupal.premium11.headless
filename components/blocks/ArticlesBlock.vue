@@ -27,14 +27,18 @@ const props = defineProps({
     gap: 30px 15px;
 
     @media (--viewport-lg-max) {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
 
     @media (--viewport-md-max) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
     @media (--viewport-sm-max) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (--viewport-xs-max) {
       grid-template-columns: 1fr;
       gap: 50px;
     }

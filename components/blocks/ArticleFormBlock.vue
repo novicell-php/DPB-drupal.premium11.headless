@@ -18,11 +18,13 @@ const state = ref(object);
 const dynamicContent = ref(null);
 const loading = ref(false);
 
-Object.keys(facets).map((key) => {
-  object[key] = Number.isInteger(facets[key].default_value)
-    ? facets[key].default_value.toString()
-    : facets[key].default_value;
-});
+// builds the initial object state from the facets, making sure that if a facet default - its added.
+Object.entries(facets).reduce((acc, [key, value]) => {
+  acc[key] = Number.isInteger(value.default_value)
+    ? value.default_value.toString()
+    : value.default_value;
+  return acc;
+}, object);
 
 object.page = props.blockData.field_articles_form.initial.page;
 
@@ -77,15 +79,16 @@ const updateContent = async () => {
     page: state.value.page,
   };
 
-  Object.keys({ ...state.value }).map((key) => {
-    if (typeof state.value[key] === 'object') {
-      Object.keys(state.value[key]).map((key2) => {
-        params[`fields[${key}][${key2}]`] = state.value[key][key2];
-      });
+  // builds out the params for filters to be added to the fetch request
+  for (const [key, value] of Object.entries(state.value)) {
+    if (typeof value === 'object') {
+      for (const [key2, val2] of Object.entries(value)) {
+        params[`fields[${key}][${key2}]`] = val2;
+      }
     } else {
-      params[key] = state.value[key];
+      params[key] = value;
     }
-  });
+  }
 
   const response = await $fetch(props.blockData.field_articles_form.endpoint, {
     params,
@@ -222,32 +225,51 @@ const updateContent = async () => {
       width: 16px;
       height: 16px;
       cursor: pointer;
-      accent-color: var(--theme-text-color) !important;
+      accent-color: var(--theme-text-color);
       padding: 0;
       margin: 0;
       vertical-align: middle;
       font-size: 16px;
       line-height: 1.5;
+      transition:
+        border 0.3s ease,
+        box-shadow 0.3s ease;
     }
 
     &__input {
       padding: 10px;
       font-size: 16px;
       line-height: 1.5;
-      border: 1px solid var(--theme-text-color);
+      border: 1px solid transparent;
       background-color: var(--color-white);
       color: var(--theme-text-color);
       width: 100%;
       height: 40px;
       box-sizing: border-box;
       vertical-align: middle;
+      transition:
+        border 0.3s ease,
+        box-shadow 0.3s ease;
+
+      &:hover {
+        border: 1px solid var(--theme-text-color);
+      }
+
+      /* focus */
+      &:focus {
+        outline: none;
+        border: 1px solid var(--theme-text-color);
+        box-shadow: 0 0 8px 2px
+          color-mix(in srgb, var(--theme-background-color), white 30%);
+      }
     }
 
     & select {
-      padding: 10px;
+      padding-top: 0;
+      padding-bottom: 0;
       font-size: 16px;
-      line-height: 1.5;
-      border: 1px solid var(--theme-text-color);
+      line-height: 40px;
+      border: 1px solid transparent;
       background-color: var(--color-white);
       cursor: pointer;
       width: 100%;
@@ -258,8 +280,26 @@ const updateContent = async () => {
       background-repeat: no-repeat;
       background-position: right 10px center;
       padding-right: 30px;
+      padding-left: 10px;
       height: 40px;
+      display: flex;
+      align-items: center;
       vertical-align: middle;
+      outline: none;
+      transition:
+        border 0.3s ease,
+        box-shadow 0.3s ease;
+
+      &:hover {
+        border: 1px solid var(--theme-text-color);
+      }
+
+      &:focus {
+        outline: none;
+        border: 1px solid var(--theme-text-color);
+        box-shadow: 0 0 8px 2px
+          color-mix(in srgb, var(--theme-background-color), white 30%);
+      }
     }
   }
 
@@ -273,18 +313,22 @@ const updateContent = async () => {
 
   &__cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
     gap: 30px 15px;
+    grid-template-columns: repeat(4, 1fr);
 
     @media (--viewport-lg-max) {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
 
     @media (--viewport-md-max) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
     @media (--viewport-sm-max) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (--viewport-xs-max) {
       grid-template-columns: 1fr;
       gap: 50px;
     }
