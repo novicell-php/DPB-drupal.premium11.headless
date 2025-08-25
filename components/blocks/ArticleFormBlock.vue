@@ -1,6 +1,5 @@
 <script setup>
 import { scrollTo } from '~/utils/scrollTo';
-import { v4 as uuidv4 } from 'uuid';
 
 const config = useRuntimeConfig().public;
 
@@ -11,7 +10,7 @@ const props = defineProps({
   },
 });
 
-const id = ref(uuidv4());
+const id = ref('article-overview-' + props.blockData.id);
 const pager = ref(props.blockData.field_articles_form.content.pager);
 console.log('ArticlesFormBlock props:', props.blockData);
 
@@ -73,16 +72,18 @@ const updateContent = async () => {
   dynamicContent.value = response.content;
   pager.value = response.pager;
   loading.value = false;
-  scrollTo(`#${id.value}`, {
-    behavior: 'smooth',
-    block: 'start',
-  });
+
+  const headerHeightVar = getComputedStyle(
+    document.documentElement,
+  ).getPropertyValue('--header-height');
+  const headerHeight = parseInt(headerHeightVar, 10) || 0;
+  scrollTo(id.value, headerHeight);
 };
 </script>
 
 <template>
   <div class="article-overview" :id="id">
-    <div style="position: relative">
+    <div class="article-overview__container">
       <div
         class="article-overview__content"
         :class="{ 'article-overview__content--loading': loading }"
@@ -109,6 +110,10 @@ const updateContent = async () => {
     gap: 30px;
     padding: 30px 0;
   } */
+
+  &__container {
+    position: relative;
+  }
 
   &__content {
     display: grid;
