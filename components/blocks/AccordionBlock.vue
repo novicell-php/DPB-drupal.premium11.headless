@@ -3,26 +3,21 @@ const props = defineProps({
   blockData: Object,
 });
 
-const active = ref(-1);
+const activeId = ref(null);
+
+const isActive = (id) => activeId.value === id;
 
 const toggle = (id) => {
-  if (active.value === id) {
-    active.value = -1;
-  } else {
-    active.value = id;
-  }
+  activeId.value = isActive(id) ? null : id;
 };
 
 const showingAll = ref(false);
-const showAll = () => {
-  showingAll.value = true;
-};
-const computedItems = computed(() => {
-  if (showingAll.value) {
-    return props.blockData.field_accordion_items;
-  }
-  return props.blockData.field_accordion_items.slice(0, 10);
-});
+
+const computedItems = computed(() =>
+  showingAll.value
+    ? props.blockData.field_accordion_items
+    : props.blockData.field_accordion_items.slice(0, 10),
+);
 </script>
 
 <template>
@@ -31,9 +26,12 @@ const computedItems = computed(() => {
     <div v-for="item in computedItems" :key="item.id" class="accordion__item">
       <button
         class="accordion__trigger"
-        :class="{ 'accordion__trigger--active': item.id === active }"
+        :class="{ 'accordion__trigger--active': isActive(item.id) }"
         type="button"
         @click="toggle(item.id)"
+        :aria-expanded="isActive(item.id).toString()"
+        :aria-controls="'accordion-content-' + item.id"
+        :id="'accordion-trigger-' + item.id"
       >
         <div class="accordion__title-text">
           {{ item.field_accordion_item_headline }}
@@ -43,13 +41,13 @@ const computedItems = computed(() => {
         </div>
       </button>
       <div
-        :class="{ 'accordion__content--active': item.id === active }"
+        :class="{ 'accordion__content--active': isActive(item.id) }"
         class="accordion__content"
+        :id="'accordion-content-' + item.id"
+        role="region"
+        :aria-labelledby="'accordion-trigger-' + item.id"
       >
-        <div
-          v-if="item.field_accordion_item_text !== null"
-          class="accordion__inner"
-        >
+        <div v-if="item.field_accordion_item_text" class="accordion__inner">
           <BaseRte :content="item.field_accordion_item_text"></BaseRte>
         </div>
       </div>
@@ -59,11 +57,10 @@ const computedItems = computed(() => {
       class="accordion__footer"
     >
       <ClientOnly>
-        <button class="accordion__button" @click="showAll">
-          {{
-            blockData.field_accordion_show_more ||
-            $t('accordion.show-more.button-text')
-          }}
+        <button class="accordion__button" @click="showingAll = true">
+          <span class="accordion__button-text">
+            {{ blockData.field_accordion_show_more || 'Show More' }}</span
+          >
           <NuxtIcon name="chevron-down" />
         </button>
       </ClientOnly>
@@ -77,7 +74,7 @@ const computedItems = computed(() => {
 
   &__title {
     font-size: 32px @(--sm) 64px;
-    margin-bottom: 48px @(--sm) 96px;
+    margin-bottom: 32px @(--sm) 64px;
     font-weight: 200;
   }
 
@@ -87,25 +84,33 @@ const computedItems = computed(() => {
 
   &__arrow {
     display: inline-block;
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease-in-out;
     margin-left: 3px;
+    transform: rotate(0);
+  }
 
-    &--up {
-      transform: rotate(180deg);
-    }
+  &__trigger--active .accordion__arrow {
+    transform: rotate(180deg);
   }
 
   &__title-text {
-    border-bottom: 1px solid transparent;
+    border-bottom: 2px solid transparent;
     transition: border-bottom 0.3s ease-in-out;
     line-height: normal;
   }
 
+  .accordion__trigger--active .accordion__title-text {
+    border-bottom: 2px solid var(--theme-text-color);
+  }
+
   &__item {
     overflow: hidden;
-    background: var(--color-white);
     color: var(--theme-text-color);
-    border-top: 1px solid var(--theme-color);
+    border-top: 1px solid var(--theme-text-color);
+
+    &:last-child {
+      border-bottom: 1px solid var(--theme-text-color);
+    }
   }
 
   &__trigger {
@@ -115,27 +120,31 @@ const computedItems = computed(() => {
     justify-content: space-between;
     width: 100%;
     padding: 16px 0;
-    color: var(--theme-color);
+    color: var(--theme-text-color);
     font-weight: 200;
     font-size: 21px @(--sm) 32px;
     font-family: var(--heading-font-family);
     text-align: left;
     border: none;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.3s ease,
+      border-bottom 0.3s ease;
 
-    &:hover {
+    &:hover,
+    &:focus {
+      background-color: color-mix(
+        in srgb,
+        var(--theme-background-color),
+        #000 5%
+      );
       .accordion__title-text {
-        border-bottom: 1px solid #000;
+        border-bottom: 2px solid var(--theme-text-color);
       }
     }
 
     span {
       transition: transform 0.3s;
-    }
-
-    &--active {
-      span {
-        transform: rotate(90deg);
-      }
     }
 
     :deep(.nuxt-icon) {
@@ -148,8 +157,13 @@ const computedItems = computed(() => {
   }
 
   &__content {
-    display: none;
+    max-height: 0;
+    opacity: 0;
     overflow: hidden;
+    transition:
+      max-height 0.4s ease,
+      opacity 0.4s ease;
+    background-color: var(--theme-background-color);
 
     :deep(p) {
       font-size: 16px @(--sm) 18px;
@@ -157,16 +171,22 @@ const computedItems = computed(() => {
     }
 
     &--active {
-      display: block;
-      background-color: var(--theme-background-color);
+      max-height: 1000px;
+      opacity: 1;
     }
   }
 
   &__inner {
+    color: var(--theme-text-color);
     padding-top: 20px @(--sm) 30px;
-    background-color: var(--theme-background-color);
-    color: var(--theme-color);
-    width: 100% @(--sm) 50%;
+    width: 100%;
+    border-top: 1px solid
+      color-mix(in srgb, var(--theme-text-color), transparent 70%);
+    transition: padding 0.3s ease;
+
+    :deep(p:last-of-type) {
+      margin-bottom: 10px;
+    }
   }
 
   &__footer {
@@ -177,16 +197,31 @@ const computedItems = computed(() => {
 
   &__button {
     border: none;
-    color: var(--theme-color);
+    color: var(--theme-text-color);
     background-color: transparent;
     font-size: 18px;
     font-family: var(--heading-font-family);
     font-weight: 300;
+
+    &:hover {
+      .accordion__button-text {
+        border-bottom: 1px solid var(--theme-text-color);
+        opacity: 0.8;
+      }
+    }
+
+    .nuxt-icon {
+      padding-left: 6px;
+    }
+  }
+
+  &__button-text {
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s ease-in-out;
   }
 }
 
-.accordion__item:last-child {
-  border-bottom: 1px solid var(--theme-color);
-  /* Add bottom border for the last item */
+.col-md-4 .layout-block--accordion .accordion__title {
+  font-size: 32px;
 }
 </style>
