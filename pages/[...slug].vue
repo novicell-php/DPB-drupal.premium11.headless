@@ -55,7 +55,8 @@ if (error.value || data.value === null) {
 }
 
 if (data.value?.type === 'redirect') {
-  await navigateTo(data.value.target);
+  const cleanPath = data.value.target.split('?')[0];
+  await navigateTo(cleanPath, { redirectCode: 301 });
 }
 
 const viewData = computed(() => {
@@ -136,11 +137,14 @@ watchEffect(() => {
 </script>
 
 <template>
-  <main>
-    <Announcements
-      v-if="siteAnnouncements"
-      :announcements="siteAnnouncements"
-    />
+  <div class="page-wrapper">
+    <div role="region" aria-label="Site announcements">
+      <Announcements
+        v-if="siteAnnouncements"
+        :announcements="siteAnnouncements"
+      />
+    </div>
+
     <PageNotFound v-if="showNotFound || !viewData" />
     <component
       v-else
@@ -148,11 +152,11 @@ watchEffect(() => {
       :data="viewData"
       :page-header="pageBlockHeaderData"
     />
-  </main>
+  </div>
 </template>
 
-<style lang="postcss">
-main {
+<style lang="postcss" scoped>
+.page-wrapper {
   padding-top: var(--header-height);
 }
 </style>

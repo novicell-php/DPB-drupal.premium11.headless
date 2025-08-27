@@ -4,7 +4,7 @@ const headerDataStore = useHeaderDataStore();
 </script>
 
 <template>
-  <div class="header-parent">
+  <navigation class="header-parent">
     <div class="container">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -15,5 +15,5 @@ const headerDataStore = useHeaderDataStore();
         </div>
       </div>
     </div>
-  </div>
+  </navigation>
 </template>

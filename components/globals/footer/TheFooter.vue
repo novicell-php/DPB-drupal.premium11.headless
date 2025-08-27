@@ -23,7 +23,7 @@ const chunkedFooterData = computed(() => {
 </script>
 
 <template>
-  <div class="footer">
+  <footer class="footer">
     <div class="container">
       <div class="row">
         <div
@@ -37,7 +37,7 @@ const chunkedFooterData = computed(() => {
         </div>
       </div>
     </div>
-  </div>
+  </footer>
 </template>
 
 <style lang="postcss" scoped>

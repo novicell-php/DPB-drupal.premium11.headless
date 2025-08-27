@@ -34,7 +34,7 @@ const removeNoScroll = () => {
         :to="node?.url"
         :target="node?.url_options?.attributes?.target"
         class="header-item__link"
-        :aria-label="'Gå til' + node?.title"
+        :aria-label="'Visit ' + node?.title"
         @click="removeNoScroll"
       >
         {{ node?.title }}
@@ -65,7 +65,7 @@ const removeNoScroll = () => {
           :to="node?.url"
           :target="node?.url_options?.attributes?.target"
           class="header-item__link"
-          :aria-label="'Gå til' + node?.title"
+          :aria-label="'Visit ' + node?.title"
           @click="removeNoScroll"
         >
           {{ node?.title }}

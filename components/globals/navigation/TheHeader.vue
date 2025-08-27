@@ -35,7 +35,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header
+  <div
     class="header__wrapper"
     :class="{ 'header__wrapper--hidden': !showHeader }"
     role="banner"
@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
         </nav>
       </div>
     </div>
-  </header>
+  </div>
 </template>
 
 <style lang="postcss" scoped>

@@ -15,7 +15,7 @@ useHead({
 </script>
 
 <template>
-  <div class="container">
+  <main class="container">
     <div class="row">
       <div class="col-xs-12 col-sm-12 col-md-12">
         <div class="view-not-found__wrapper">
@@ -24,7 +24,7 @@ useHead({
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <style lang="postcss" scoped>
