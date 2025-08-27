@@ -14,12 +14,18 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="page-view">
+  <main class="page-view">
     <PageHeader v-if="pageHeader" :page-block-header-data="pageHeader" />
 
     <Sections
       v-if="data && data.layout_builder__layout"
       :sections="data.layout_builder__layout"
     />
-  </div>
+  </main>
 </template>
+
+<style lang="postcss">
+main {
+  padding-top: 0;
+}
+</style>

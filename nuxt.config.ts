@@ -19,6 +19,9 @@ export default defineNuxtConfig({
 
     head: {
       titleTemplate: '%s | Novicell',
+      htmlAttrs: {
+        lang: 'en',
+      },
 
       meta: [
         { charset: 'utf-8' },

@@ -23,7 +23,7 @@ const props = defineProps({
           <BaseImage :image="blockData.field_list_media" />
           <span
             class="base-article__type-label"
-            v-if="blockData.field_article_type.label"
+            v-if="blockData.field_article_type?.label"
             >{{ blockData.field_article_type.label }}</span
           >
         </div>

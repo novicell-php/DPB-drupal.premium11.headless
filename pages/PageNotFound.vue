@@ -40,7 +40,7 @@ const { data } = await useAsyncData('Home', async () => {
 </script>
 
 <template>
-  <div class="not-found-page">
+  <main class="not-found-page">
     <div class="container">
       <div class="not-found-page__content">
         <div class="not-found-page__code">404</div>
@@ -54,7 +54,7 @@ const { data } = await useAsyncData('Home', async () => {
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <style lang="postcss" scoped>

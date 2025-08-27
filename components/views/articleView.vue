@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="article-view">
+  <main class="article-view">
     <div class="container container--indented">
       <div class="article-view__header">
         <div class="article-view__header-content">
@@ -31,7 +31,7 @@ const props = defineProps({
       v-if="data && data.layout_builder__layout"
       :sections="data.layout_builder__layout"
     />
-  </div>
+  </main>
 </template>
 
 <style lang="postcss" scoped>

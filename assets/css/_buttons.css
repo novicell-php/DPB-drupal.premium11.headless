@@ -131,6 +131,24 @@
     }
   }
 
+  &--normal {
+    padding: 14px 24px;
+    font-size: 14px;
+    color: var(--theme-background-color);
+    border: 1px solid var(--theme-text-color);
+    background-color: var(--theme-text-color);
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: var(--theme-text-color);
+      background-color: var(--theme-background-color);
+      opacity: 0.8;
+    }
+  }
+
   &--ghost {
     padding: 14px 24px;
     color: var(--theme-text-color);
@@ -140,41 +158,11 @@
     text-transform: uppercase;
     background-color: transparent;
     border: 1px solid var(--theme-text-color);
+    transition: all 0.3s ease;
 
     &:hover {
-      color: var(--theme-text-color);
-      background-color: var(--theme-background-color);
-      opacity: 1;
-    }
-
-    &.button {
-      &--primary {
-        color: var(--theme-text-color);
-      }
-
-      &--success {
-        color: var(--color-success);
-      }
-
-      &--warning {
-        color: var(--color-warning);
-      }
-
-      &--error {
-        color: var(--color-error);
-      }
-
-      &:hover {
-        color: var(--color-white);
-      }
-
-      &--white {
-        color: var(--color-white);
-
-        &:hover {
-          color: var(--color-black);
-        }
-      }
+      color: var(--theme-background-color);
+      background-color: var(--theme-text-color);
     }
   }
 
