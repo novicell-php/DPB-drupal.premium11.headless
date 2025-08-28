@@ -33,8 +33,10 @@ const computedItems = computed(() =>
         :aria-controls="'accordion-content-' + item.id"
         :id="'accordion-trigger-' + item.id"
       >
-        <div class="accordion__title-text">
-          {{ item.field_accordion_item_headline }}
+        <div class="accordion__text-wrapper">
+          <div class="accordion__title-text">
+            {{ item.field_accordion_item_headline }}
+          </div>
         </div>
         <div class="accordion__arrow-wrapper">
           <span class="accordion__arrow"><NuxtIcon name="chevron-down" /></span>
@@ -91,6 +93,10 @@ const computedItems = computed(() =>
 
   &__trigger--active .accordion__arrow {
     transform: rotate(180deg);
+  }
+
+  &__text-wrapper {
+    padding-left: 0px @(--sm) 30px;
   }
 
   &__title-text {
@@ -178,7 +184,7 @@ const computedItems = computed(() =>
 
   &__inner {
     color: var(--theme-text-color);
-    padding-top: 20px @(--sm) 30px;
+    padding: 30px 30px 0 30px;
     width: 100%;
     border-top: 1px solid
       color-mix(in srgb, var(--theme-text-color), transparent 70%);
@@ -186,6 +192,10 @@ const computedItems = computed(() =>
 
     :deep(p:last-of-type) {
       margin-bottom: 10px;
+    }
+
+    @media (--viewport-sm-max) {
+      padding: 20px 20px 0 20px;
     }
   }
 

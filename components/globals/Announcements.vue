@@ -12,7 +12,9 @@ const props = defineProps({
     v-for="(announcement, index) in announcements"
     :key="index"
   >
-    <div class="announcements__content" v-html="announcement.body"></div>
+    <div class="announcements__content">
+      <BaseRte :content="announcement.body" />
+    </div>
   </div>
 </template>
 
