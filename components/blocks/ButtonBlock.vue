@@ -41,16 +41,7 @@ const props = defineProps({
   overflow: hidden;
   font-weight: 600;
   font-family: var(--heading-font-family);
-  border-radius: 100px;
   cursor: pointer;
-}
-
-.button--ghost {
-  border: 1px solid var(--color-gray-16);
-}
-
-.button--normal {
-  color: var(--color-white);
 }
 
 .button--center {
