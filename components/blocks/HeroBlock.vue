@@ -120,7 +120,7 @@ const isDarkBg = computed(() => {
     }
 
     :deep(strong) {
-      padding: 4px 14px;
+      padding: 4px 11px 4px 14px;
       color: var(--color-white);
       font-weight: 200;
       font-size: 14px;
