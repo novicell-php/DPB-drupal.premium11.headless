@@ -99,6 +99,7 @@
       color: var(--color-white);
       background-color: var(--color-black);
       border-color: var(--color-white);
+      opacity: 0.8;
     }
 
     &:active {
