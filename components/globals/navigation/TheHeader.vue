@@ -17,11 +17,15 @@ const threshold = 10;
 
 const handleScroll = () => {
   const currentScrollY = window.scrollY;
-  if (currentScrollY - lastScrollY.value > threshold) {
+
+  if (currentScrollY <= 0) {
+    showHeader.value = true;
+  } else if (currentScrollY - lastScrollY.value > threshold) {
     showHeader.value = false;
   } else if (lastScrollY.value - currentScrollY > threshold) {
     showHeader.value = true;
   }
+
   lastScrollY.value = currentScrollY;
 };
 
