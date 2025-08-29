@@ -96,14 +96,14 @@
     border-color: var(--color-white);
 
     &:hover {
-      color: var(--color-black);
-      background-color: var(--color-white);
+      color: var(--color-white);
+      background-color: var(--color-black);
       border-color: var(--color-white);
     }
 
     &:active {
-      color: var(--color-black);
-      background-color: var(--color-white);
+      color: var(--color-white);
+      background-color: var(--color-black);
       border-color: var(--color-white);
     }
   }
@@ -167,24 +167,28 @@
     padding-right: 0;
     padding-bottom: 4px;
     padding-left: 0;
-    color: var(--color-text);
-    font-weight: 200;
     font-weight: 500;
+    color: var(--theme-background-color);
     background-color: transparent;
-    border-top: none;
-    border-right: none;
-    border-left: none;
+    border: none;
+    border-bottom: 1px solid var(--theme-background-color);
+    padding-bottom: 6px;
+    opacity: 1;
+    transition: all 0.3s ease;
 
     &:hover {
-      color: var(--color-text);
-      background-color: transparent;
+      color: var(--theme-text-color);
+      opacity: 0.7;
     }
 
     &.button {
       &--white {
+        color: var(--color-white);
+        border-color: var(--color-white);
+        background: none;
+
         &:hover {
           color: var(--color-white);
-          background: none;
         }
       }
     }

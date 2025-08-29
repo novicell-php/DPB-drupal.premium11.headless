@@ -148,3 +148,20 @@
     transform: translateX(0);
   }
 }
+
+/* slide to top */
+.announcement-slide-enter-active,
+.announcement-slide-leave-active {
+  transition: max-height 0.4s ease;
+  overflow: hidden;
+}
+
+.announcement-slide-enter-from,
+.announcement-slide-leave-to {
+  max-height: 0;
+}
+
+.announcement-slide-enter-to,
+.announcement-slide-leave-from {
+  max-height: 200px; /* large enough to cover expected content */
+}
