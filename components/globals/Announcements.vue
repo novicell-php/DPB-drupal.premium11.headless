@@ -54,15 +54,19 @@ watch(
         v-for="announcement in visibleAnnouncements"
         :key="announcement.dismissId"
       >
-        <div class="announcements__content">
-          <BaseRte :content="announcement.body" />
-          <button
-            v-if="announcement.field_dismissable"
-            class="announcements__close"
-            @click="dismiss(announcement.dismissId)"
-          >
-            ×
-          </button>
+        <div class="container announcements__container">
+          <div class="row">
+            <div class="announcements__content">
+              <BaseRte :content="announcement.body" />
+              <button
+                v-if="announcement.field_dismissable"
+                class="announcements__close"
+                @click="dismiss(announcement.dismissId)"
+              >
+                ×
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </transition-group>
@@ -73,22 +77,22 @@ watch(
 .announcements {
   border-bottom: 1px solid var(--color-white);
   text-align: center;
+  background-color: var(--color-success);
 
   &__content {
     position: relative;
     font-weight: 600;
     padding: 20px;
-    background-color: var(--color-success);
     color: var(--color-white);
-    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
   }
 
   &__close {
     position: absolute;
-    top: 10px;
+    top: 0px;
     right: 15px;
     background: none;
     border: none;
