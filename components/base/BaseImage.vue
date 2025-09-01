@@ -83,8 +83,7 @@ const processedComponentTypeClass = computed(() => {
   &__caption {
     max-width: var(--container-width);
     margin: 16px auto 0;
-    color: var(--color-gray-62);
-    font-size: var(--font-size-paragraph-xs);
+    color: var(--theme-text-color);
   }
 }
 
