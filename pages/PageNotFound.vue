@@ -40,7 +40,7 @@ const { data } = await useAsyncData('Home', async () => {
 </script>
 
 <template>
-  <main class="not-found-page">
+  <main id="main" class="not-found-page" tabindex="-1">
     <div class="container">
       <div class="not-found-page__content">
         <div class="not-found-page__code">404</div>
