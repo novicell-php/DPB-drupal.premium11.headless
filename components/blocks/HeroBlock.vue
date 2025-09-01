@@ -33,11 +33,9 @@ const isDarkBg = computed(() => {
         { 'hero__content--dark': isDarkText },
       ]"
     >
-      <div
-        v-if="blockData.field_hero?.field_text !== null"
-        class="hero__text"
-        v-html="blockData.field_hero?.field_text"
-      ></div>
+      <div v-if="blockData.field_hero?.field_text !== null" class="hero__text">
+        <BaseRte :content="blockData.field_hero?.field_text" />
+      </div>
       <BaseButton
         v-if="blockData.field_hero?.field_cta !== null"
         :button-data="blockData.field_hero?.field_cta"
@@ -109,6 +107,18 @@ const isDarkBg = computed(() => {
 
     &--dark {
       color: var(--color-black);
+
+      .button--link {
+        color: var(--color-black);
+        border-color: var(--color-black);
+        opacity: 1;
+        transition: opacity 0.3s ease;
+
+        &:hover,
+        &:focus {
+          opacity: 0.7;
+        }
+      }
     }
   }
 
