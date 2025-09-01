@@ -11,7 +11,7 @@ const props = defineProps({
 <style lang="postcss" scoped>
 .divider {
   margin: 28px 0;
-  border-top: 1px solid var(--color-base-divider);
+  border-top: 1px solid var(--theme-text-color);
   opacity: 0.3;
 }
 </style>

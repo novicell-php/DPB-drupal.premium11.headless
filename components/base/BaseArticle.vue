@@ -79,14 +79,26 @@ const props = defineProps({
   &__image {
     position: relative;
     overflow: hidden;
-    transition: opacity 0.25s;
+
+    &:after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      transition: background 0.3s ease;
+    }
+
+    .base-article__link:hover &:after {
+      background: rgba(0, 0, 0, 0.15);
+    }
 
     :deep(img) {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      transition: transform 0.5s;
+      transform-origin: center;
+      transition: transform 0.5s ease;
+    }
+
+    .base-article__link:hover :deep(img) {
+      transform: scale(1.05);
     }
   }
 
@@ -105,7 +117,7 @@ const props = defineProps({
   &__date {
     font-size: 13px;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-family: 'Courier New', Courier, monospace;
     font-weight: 600;
     text-transform: uppercase;
@@ -113,12 +125,12 @@ const props = defineProps({
   }
 
   &__title {
-    padding-top: 10px;
+    padding: 10px 10px 0 10px;
     font-size: 20px;
   }
 
   &__content {
-    padding: 10px 0;
+    padding: 10px;
     font-size: 16px;
     line-height: 1.5;
     min-height: 130px;

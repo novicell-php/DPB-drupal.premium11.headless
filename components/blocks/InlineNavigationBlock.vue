@@ -2,6 +2,8 @@
 import { Navigation, Scrollbar, A11y } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
+// TODO: align button at the bottom of the article cards
+
 const props = defineProps({
   blockData: Object,
   title: {

@@ -75,15 +75,15 @@ watch(
 
 <style lang="postcss" scoped>
 .announcements {
-  border-bottom: 1px solid var(--color-white);
+  border-bottom: 1px solid #111827;
   text-align: center;
-  background-color: var(--color-success);
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 500;
 
   &__content {
     position: relative;
-    font-weight: 600;
     padding: 20px;
-    color: var(--color-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -91,12 +91,12 @@ watch(
   }
 
   &__close {
+    color: #111827;
     position: absolute;
     top: 0px;
     right: 15px;
     background: none;
     border: none;
-    color: var(--color-white);
     font-size: 20px;
     cursor: pointer;
   }
