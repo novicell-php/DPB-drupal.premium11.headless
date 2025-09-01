@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <main class="page-view">
+  <main id="main" class="page-view" tabindex="-1">
     <PageHeader v-if="pageHeader" :page-block-header-data="pageHeader" />
 
     <Sections

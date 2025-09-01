@@ -15,7 +15,7 @@ useHead({
 </script>
 
 <template>
-  <main class="container">
+  <main id="main" class="container" tabindex="-1">
     <div class="row">
       <div class="col-xs-12 col-sm-12 col-md-12">
         <div class="view-not-found__wrapper">

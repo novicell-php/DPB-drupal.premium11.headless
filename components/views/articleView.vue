@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <main class="article-view">
+  <main id="main" class="article-view" tabindex="-1">
     <div class="container container--indented">
       <div class="article-view__header">
         <div class="article-view__header-content">
