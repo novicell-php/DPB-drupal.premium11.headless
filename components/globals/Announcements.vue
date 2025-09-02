@@ -88,6 +88,10 @@ watch(
     align-items: center;
     justify-content: center;
     width: 100%;
+
+    :deep(p:last-child) {
+      margin-bottom: 0;
+    }
   }
 
   &__close {

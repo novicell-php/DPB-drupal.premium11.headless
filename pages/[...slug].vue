@@ -138,11 +138,8 @@ watchEffect(() => {
 
 <template>
   <div class="page-wrapper">
-    <div role="region" aria-label="Site announcements">
-      <Announcements
-        v-if="siteAnnouncements"
-        :announcements="siteAnnouncements"
-      />
+    <div role="region" aria-label="Site announcements" v-if="siteAnnouncements">
+      <Announcements :announcements="siteAnnouncements" />
     </div>
 
     <PageNotFound v-if="showNotFound || !viewData" />

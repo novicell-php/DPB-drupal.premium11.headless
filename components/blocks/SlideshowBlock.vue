@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Navigation, A11y, Autoplay, Scrollbar } from 'swiper';
+
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
 const modules = [Navigation, Scrollbar, A11y, Autoplay];
@@ -35,7 +36,7 @@ if (props.blockData?.field_slideshow_autoplay) {
           v-for="image in blockData.field_slideshow_images"
           :key="image.id"
         >
-          <BaseImage :image="image" />
+          <BaseImage loading="eager" :image="image" />
         </SwiperSlide>
       </Swiper>
     </ClientOnly>

@@ -8,6 +8,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  loading: {
+    type: String as () => 'lazy' | 'eager' | undefined,
+    default: 'lazy',
+  },
 });
 
 const processedIsOverlay = computed(() => {
@@ -39,7 +43,7 @@ const processedComponentTypeClass = computed(() => {
             ? image?.field_media_image?.img_element?.alt
             : image?.label
         "
-        loading="lazy"
+        :loading="loading"
         :width="image?.field_media_image?.width"
         :height="image?.field_media_image?.height"
         :title="
