@@ -56,7 +56,6 @@ const isDarkBg = computed(() => {
 <style lang="postcss" scoped>
 .hero {
   position: relative;
-  margin-bottom: var(--grid-gutter);
   padding: 80px var(--grid-gutter);
   overflow: hidden;
 

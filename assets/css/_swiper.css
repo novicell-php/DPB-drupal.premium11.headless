@@ -1,7 +1,7 @@
 @import 'swiper/swiper-bundle.min.css';
 
 .swiper {
-  padding: 62px 0 54px;
+  padding: 60px 0 40px;
 }
 
 .swiper-slide {
@@ -30,6 +30,8 @@
   width: 42px;
   height: 42px;
   margin-top: 0;
+  border: 1px solid transparent;
+  transition: border 0.3s;
 
   @media (--viewport-sm-min) {
     top: 0;

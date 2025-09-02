@@ -9,6 +9,7 @@
           :image="pageBlockHeaderData?.field_background"
           :is-overlay="pageBlockHeaderData?.field_overlay"
           :component-type-class="pageBlockHeaderData?.bundle"
+          loading="eager"
         />
         <div
           class="page-header__content-wrapper"

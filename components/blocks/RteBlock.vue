@@ -76,8 +76,35 @@ if (alteredData.field_text !== null) {
 </script>
 
 <style lang="postcss" scoped>
-/* Aligning image with deep selectors */
 .rte {
+  word-wrap: break-word;
+
+  :deep(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--heading-font-family);
+    font-weight: 200;
+  }
+
+  :deep(a) {
+    color: var(--theme-text-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--theme-text-color);
+    transition: opacity 0.3s ease-in-out;
+    font-size: inherit;
+    line-height: 1.4;
+    opacity: 1;
+    font-weight: 400;
+
+    &:after {
+      content: '→';
+      padding-left: 7px;
+    }
+
+    &:hover,
+    &:focus {
+      opacity: 0.7;
+    }
+  }
+
   :deep(.text-align-center) {
     display: block;
     margin-right: auto;
@@ -110,6 +137,20 @@ if (alteredData.field_text !== null) {
     color: var(--color-gray-42);
     font-size: 0.9rem;
     font-style: italic;
+  }
+
+  :deep(.align-center) {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+
+  :deep(.align-right) {
+    display: block;
+    margin-right: 0;
+    margin-left: auto;
+    text-align: right;
   }
 }
 </style>

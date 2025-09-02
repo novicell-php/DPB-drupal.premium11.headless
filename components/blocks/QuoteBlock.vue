@@ -1,3 +1,9 @@
+<script setup>
+const props = defineProps({
+  blockData: Object,
+});
+</script>
+
 <template>
   <blockquote class="quote">
     <div class="quote__text">
@@ -12,42 +18,62 @@
   </blockquote>
 </template>
 
-<script setup>
-const props = defineProps({
-  blockData: Object,
-});
-</script>
-
 <style lang="postcss" scoped>
 .quote {
-  margin: 0;
+  margin: 0 auto;
+  max-width: 700px;
   text-align: center;
+  padding: 2.5rem 2rem;
+  position: relative;
+  font-family: serif;
 
   &__text {
     display: flex;
-  }
-  &__mark {
-    font-size: 3rem;
-    line-height: 0;
-    vertical-align: top;
-    user-select: none;
-    margin-right: 0.2rem;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.5rem;
+    position: relative;
+    background-color: transparent;
   }
 
-  &__text {
+  &__mark {
+    font-size: 5rem @(--sm) 8rem;
+    height: 80px;
+    line-height: 1;
+    vertical-align: top;
+    user-select: none;
+    font-weight: 700;
+    opacity: 0.15;
+    position: relative;
+    top: 0.25rem;
+  }
+
+  &__text p {
     white-space: pre-line;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.3;
-    font-size: clamp(2rem, 2.5vw, 2rem);
+    font-size: clamp(2rem, 3vw, 2.5rem);
     margin: 0;
+    font-family: serif;
   }
 
   &__author {
-    padding-left: 1rem;
-    margin-top: 0.8rem;
-    font-size: 1rem;
+    margin-top: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 500;
     font-style: normal;
-    text-align: start;
+    text-align: center;
+    letter-spacing: 0.05em;
+    font-family: serif;
+  }
+}
+
+.col-md-4 .layout-block--quote .quote {
+  &__mark {
+    font-size: 4rem;
+  }
+  &__text p {
+    font-size: 2rem @(--sm) 1.5rem;
   }
 }
 </style>

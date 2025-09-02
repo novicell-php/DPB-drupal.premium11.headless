@@ -1,5 +1,6 @@
 <script setup>
 import BaseImage from './BaseImage.vue';
+import BaseNoImageFallback from './BaseNoImageFallback.vue';
 
 const props = defineProps({
   blockData: {
@@ -7,6 +8,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+console.log('BaseArticle blockData:', props.blockData);
 </script>
 
 <template>
@@ -16,17 +19,26 @@ const props = defineProps({
         <div class="base-article__date" v-if="blockData.field_list_date">
           {{ blockData.field_list_date }}
         </div>
-        <div
-          v-if="blockData.field_list_media?.field_media_image"
-          class="base-article__image"
-        >
-          <BaseImage :image="blockData.field_list_media" />
-          <span
-            class="base-article__type-label"
-            v-if="blockData.field_article_type?.label"
-            >{{ blockData.field_article_type.label }}</span
-          >
+        <div class="base-article__image">
+          <div v-if="blockData.field_list_media?.field_media_image">
+            <BaseImage :image="blockData.field_list_media" />
+            <span
+              class="base-article__type-label"
+              v-if="blockData.field_article_type?.label"
+              >{{ blockData.field_article_type.label }}</span
+            >
+          </div>
+
+          <div v-else class="base-article__image">
+            <BaseNoImageFallback />
+            <span
+              class="base-article__type-label"
+              v-if="blockData.field_article_type?.label"
+              >{{ blockData.field_article_type.label }}</span
+            >
+          </div>
         </div>
+
         <div
           role="heading"
           aria-level="3"
@@ -137,7 +149,7 @@ const props = defineProps({
   }
 
   &__button {
-    margin-top: 10px;
+    margin-top: auto;
   }
 }
 </style>
