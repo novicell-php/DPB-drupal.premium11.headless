@@ -2,6 +2,8 @@
 import { useHeaderDataStore } from '~/stores/headerData';
 import { useFooterDataStore } from '~/stores/footerData';
 import PageNotFound from '../pages/PageNotFound.vue';
+import NotFoundView from '../components/views/NotFoundView.vue';
+
 definePageMeta({
   layout: 'default',
 });
@@ -151,9 +153,3 @@ watchEffect(() => {
     />
   </div>
 </template>
-
-<style lang="postcss" scoped>
-.page-wrapper {
-  padding-top: var(--header-height);
-}
-</style>

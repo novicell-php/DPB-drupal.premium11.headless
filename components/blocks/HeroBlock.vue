@@ -25,6 +25,7 @@ const isDarkBg = computed(() => {
       class="hero__media"
       :block-data="blockData"
       :component-type-class="blockData.field_hero?.bundle"
+      loading="eager"
     />
     <div
       class="hero__content"

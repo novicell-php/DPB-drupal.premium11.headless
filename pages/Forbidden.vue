@@ -16,6 +16,22 @@ useHead({
     },
   ],
 });
+
+const headerStore = useHeaderDataStore();
+const footerStore = useFooterDataStore();
+
+const regionsToFetch = ref(['footer', 'header']);
+const { data } = await useAsyncData('Home', async () => {
+  const res = await useMultipleRegions('/', regionsToFetch.value);
+
+  if (res) {
+    const { header, footer } = res;
+    header?.navigation && headerStore.setHeaderData(header.navigation);
+    footer?.footer && footerStore.setFooterData(footer.footer);
+  }
+
+  return res;
+});
 </script>
 
 <template>

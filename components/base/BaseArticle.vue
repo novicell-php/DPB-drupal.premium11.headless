@@ -8,8 +8,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-console.log('BaseArticle blockData:', props.blockData);
 </script>
 
 <template>

@@ -1,9 +1,29 @@
-<script setup lang="ts">
+<script setup>
 const props = defineProps({
   video: {
     type: Object,
     required: true,
   },
+  autoplay: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
+
+const iframeHtml = computed(() => {
+  if (!props.video?.field_media_oembed_video?.html) return '';
+
+  let html = props.video.field_media_oembed_video.html;
+
+  if (props.autoplay) {
+    html = html.replace(
+      /src="([^"]+)"/,
+      (match, p1) => `src="${p1}${p1.includes('?') ? '&' : '?'}autoplay=1"`,
+    );
+  }
+
+  return html;
 });
 </script>
 
@@ -12,7 +32,7 @@ const props = defineProps({
     <div
       v-if="props.video.bundle == 'remote_video'"
       class="video-base__iframe"
-      v-html="props.video.field_media_oembed_video.html"
+      v-html="iframeHtml"
     ></div>
     <div v-else>{{ props.video.bundle }} not implemented</div>
   </div>
