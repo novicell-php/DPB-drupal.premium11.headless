@@ -41,7 +41,7 @@ const processedComponentTypeClass = computed(() => {
         :alt="
           image?.field_media_image?.img_element?.alt
             ? image?.field_media_image?.img_element?.alt
-            : image?.label
+            : ''
         "
         :loading="loading"
         :width="image?.field_media_image?.width"
@@ -49,7 +49,7 @@ const processedComponentTypeClass = computed(() => {
         :title="
           image?.field_media_image?.img_element?.alt
             ? image?.field_media_image?.img_element?.alt
-            : image?.label
+            : ''
         "
       />
     </picture>

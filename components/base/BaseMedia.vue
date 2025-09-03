@@ -1,26 +1,31 @@
+<script setup lang="ts">
+const props = defineProps({
+  blockData: Object,
+  loading: {
+    type: String as () => 'lazy' | 'eager' | undefined,
+    default: 'lazy',
+  },
+});
+</script>
+
 <template>
   <div class="base-media">
     <BaseImage
-      v-if="blockData.field_hero?.field_background?.bundle === 'image'"
+      v-if="blockData?.field_hero?.field_background?.bundle === 'image'"
       :image="blockData.field_hero?.field_background"
       :is-overlay="blockData.field_hero?.field_overlay"
       :component-type-class="blockData.bundle"
+      :loading="loading"
     />
 
     <!-- Needs improvements!! Not handling if video is uploaded -->
     <BaseVideo
-      v-if="blockData.field_hero?.field_background?.bundle === 'remote_video'"
+      v-if="blockData?.field_hero?.field_background?.bundle === 'remote_video'"
       :video="blockData.field_hero?.field_background"
       :component-type-class="blockData.bundle"
     />
   </div>
 </template>
-
-<script setup>
-const props = defineProps({
-  blockData: Object,
-});
-</script>
 
 <style lang="postcss" scoped>
 .base-media {

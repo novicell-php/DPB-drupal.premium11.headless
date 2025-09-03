@@ -7,16 +7,34 @@ const props = defineProps({
 });
 
 const seeVideo = ref(false);
+const triggerPulse = ref(false);
+
 const showVideo = () => {
   seeVideo.value = true;
+};
+
+const handleWrapperHover = () => {
+  triggerPulse.value = false;
+  nextTick(() => {
+    triggerPulse.value = true;
+  });
 };
 </script>
 
 <template>
   <ClientOnly>
     <div class="video">
-      <template v-if="blockData?.field_video_media !== null">
-        <div class="video__wrapper">
+      <template v-if="props.blockData?.field_video_media !== null">
+        <div
+          class="video__wrapper"
+          tabindex="0"
+          role="button"
+          aria-label="Play video"
+          @click="showVideo"
+          @keydown.enter.prevent="showVideo"
+          @keydown.space.prevent="showVideo"
+          @mouseenter="handleWrapperHover"
+        >
           <img
             v-show="!seeVideo"
             class="video__thumbnail"
@@ -33,28 +51,36 @@ const showVideo = () => {
           <NuxtIcon
             v-show="!seeVideo"
             class="video__play-icon"
+            :class="{ 'video__play-icon--pulse': triggerPulse }"
             name="play"
             @click="showVideo"
+            @animationend="triggerPulse = false"
           />
           <div
             v-show="!seeVideo"
             class="video__content"
             :class="`video__content--${blockData?.field_video_text_color}`"
           >
-            <h2 v-show="blockData?.field_video_headline !== null">
+            <h2
+              v-show="blockData?.field_video_headline !== null"
+              class="video__title"
+              role="heading"
+              aria-level="3"
+            >
               {{ blockData?.field_video_headline }}
             </h2>
-            <div
+            <p
               v-show="blockData?.field_video_subline !== null"
               class="video__subtext"
             >
               {{ blockData?.field_video_subline }}
-            </div>
+            </p>
           </div>
           <Transition name="fade-in">
             <BaseVideo
               v-if="seeVideo"
               :video="blockData?.field_video_media || blockData"
+              :autoplay="true"
             />
           </Transition>
         </div>
@@ -83,40 +109,12 @@ const showVideo = () => {
   height: 0;
   padding-bottom: 56.25%;
 
-  :deep(svg) {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  &--with-consent {
-    background-color: var(--color-gray-16);
-  }
-
   &__wrapper {
     position: relative;
     width: 100%;
     height: 0;
     padding-bottom: 56.25%;
-  }
-
-  &-base {
-    position: relative;
-  }
-
-  &__play-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80px @(--sm) 100px;
-    height: 80px @(--sm) 100px;
-    color: var(--color-white);
-    font-size: 25px @(--sm) 40px;
-    border: 2px solid var(--color-white);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
+    overflow: hidden;
   }
 
   &__thumbnail {
@@ -125,6 +123,55 @@ const showVideo = () => {
     height: 100%;
     object-fit: cover;
     cursor: pointer;
+    transition:
+      transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+      filter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &__wrapper:hover .video__thumbnail {
+    transform: scale(1.05);
+    filter: brightness(0.85);
+  }
+
+  &:focus-within .video__thumbnail {
+    transform: scale(1.05);
+    filter: brightness(0.85);
+  }
+
+  &__play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 84px;
+    height: 84px;
+    color: var(--color-white);
+    font-size: 32px;
+    border: 3px solid var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
+
+    :deep(svg) {
+      margin: 0;
+    }
+  }
+
+  &__play-icon--pulse {
+    animation: pulse-once 0.4s ease;
+    animation-delay: 0.3s;
+  }
+
+  &__play-icon:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.9;
+    filter: brightness(0.85);
   }
 
   &__content {
@@ -133,21 +180,18 @@ const showVideo = () => {
     bottom: 15px;
     z-index: 1;
 
-    @media (--viewport-sm-max) {
-      padding: 10px;
-    }
-
     &--light {
       color: var(--color-white);
     }
 
     &--dark {
-      color: var(--color-text);
+      color: var(--color-black);
     }
   }
 
   &__subtext {
     font-size: 18px;
+    margin-bottom: 0;
   }
 
   &__copyright-text {
@@ -157,38 +201,18 @@ const showVideo = () => {
   }
 }
 
-.container--full {
-  .video {
-    &__copyright-text {
-      padding: 0 var(--grid-gutter);
-    }
+@keyframes pulse-once {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
   }
-}
-
-.consent-box {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 90% @(--ms) 320px @(--sm) 450px;
-  margin: auto;
-  padding: 10px @(--ms) 20px 30px;
-  text-align: center;
-  background-color: var(--color-white);
-  border: 2px solid var(--color-gray-62);
-  transform: translate(-50%, -50%);
-
-  @media (--viewport-xs-max) {
-    font-size: var(--font-size-paragraph-xs);
-
-    :deep(.button) {
-      font-size: var(--font-size-paragraph-xs);
-    }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.9;
   }
-
-  @media (--ms-max) {
-    :deep(.button) {
-      letter-spacing: 0.14em;
-    }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
   }
 }
 </style>

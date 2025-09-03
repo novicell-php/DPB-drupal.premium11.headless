@@ -27,12 +27,12 @@ body {
   }
 }
 
-/* docking footer at the bottom of the page */
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
+  padding-top: var(--header-height);
 }
 
 main {
