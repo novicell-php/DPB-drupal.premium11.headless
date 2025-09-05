@@ -6,23 +6,39 @@ const props = defineProps({
   },
 });
 
-const hasChildren = computed(() => {
-  const { below } = props.node;
+const bottomDrawer = inject('bottomDrawer', null);
+const currentDrawerKey = inject('currentDrawerKey', ref(null));
 
-  if (below.length === 0) {
-    return false;
-  } else if (below.length > 0) {
-    return true;
-  }
+const hasChildren = computed(() => {
+  const { below } = props.node || {};
+  return below && below.length > 0;
 });
 
-const isOpen = ref(false);
-const toggle = () => {
-  isOpen.value = !isOpen.value;
+const closeDrawer = () => {
+  bottomDrawer.closeBottomDrawer();
+  currentDrawerKey.value = null;
+};
+
+const handleClick = () => {
+  if (!bottomDrawer || !props.node) return;
+
+  const key = props.node.title;
+
+  if (hasChildren.value) {
+    if (currentDrawerKey.value === key) {
+      closeDrawer;
+    } else {
+      bottomDrawer.openBottomDrawer(props.node.below);
+      currentDrawerKey.value = key;
+    }
+  }
 };
 
 const removeNoScroll = () => {
   document.body.classList.remove('no-scroll');
+  if (bottomDrawer) {
+    bottomDrawer.closeBottomDrawer();
+  }
 };
 </script>
 
@@ -39,51 +55,33 @@ const removeNoScroll = () => {
       >
         {{ node?.title }}
       </NuxtLink>
-      <span v-if="node?.description" class="header-item__tooltip">
-        {{ node?.description }}
-      </span>
 
-      <span
-        v-if="hasChildren && !node?.url"
+      <button
+        v-else-if="hasChildren"
         class="header-item__trigger"
-        aria-label="Åben menu"
-        :class="{ 'header-item__trigger--open': isOpen }"
         type="button"
-        @click="toggle"
+        @click="handleClick"
+        :aria-label="node?.title + ' - Open submenu'"
       >
         <span class="header-item__link">
           {{ node?.title }}
         </span>
         <NuxtIcon class="button__icon-after" name="chevron-down" fill />
-      </span>
+      </button>
+
       <span
-        v-else-if="hasChildren && node?.url"
-        class="header-item__trigger"
-        :class="{ 'header-item__trigger--open': isOpen }"
+        v-else
+        class="header-item__link"
+        :aria-label="node?.title"
+        @click="closeDrawer"
       >
-        <NuxtLink
-          :to="node?.url"
-          :target="node?.url_options?.attributes?.target"
-          class="header-item__link"
-          :aria-label="'Visit ' + node?.title"
-          @click="removeNoScroll"
-        >
-          {{ node?.title }}
-        </NuxtLink>
-        <NuxtIcon
-          class="button__icon-after"
-          name="chevron-down"
-          fill
-          aria-label="Åben menu"
-          type="button"
-          @click="toggle"
-        />
+        {{ node?.title }}
+      </span>
+
+      <span v-if="node?.description" class="header-item__tooltip">
+        {{ node?.description }}
       </span>
     </div>
-
-    <ul v-if="hasChildren && isOpen" class="header-item__children">
-      <HeaderItem v-for="child in node?.below" :key="child.id" :node="child" />
-    </ul>
   </div>
 </template>
 
@@ -101,21 +99,12 @@ const removeNoScroll = () => {
     display: flex;
     align-items: center;
     font-size: 16px;
-    padding: 0 20px;
-
-    @media (--viewport-md-min) {
-      padding: 0 20px;
-    }
 
     &:hover {
       .header-item__tooltip {
         visibility: visible;
         opacity: 1;
       }
-    }
-
-    &:last-child {
-      padding-right: 0;
     }
   }
 
@@ -162,6 +151,8 @@ const removeNoScroll = () => {
     background: none;
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 
     .nuxt-icon {
       position: absolute;
@@ -171,16 +162,18 @@ const removeNoScroll = () => {
       transition: transform 0.3s;
     }
 
-    &--open .nuxt-icon {
-      transform: translateY(-50%) rotate(180deg);
+    &:hover {
+      .header-item__link {
+        color: var(--color-primary);
+      }
     }
   }
+}
 
-  &__children {
-    position: absolute;
-    margin: 0;
-    padding: 5px 0;
-    list-style: none;
+/* Hide desktop dropdown on mobile */
+@media (--viewport-sm-max) {
+  .header-item__children {
+    display: none;
   }
 }
 </style>
