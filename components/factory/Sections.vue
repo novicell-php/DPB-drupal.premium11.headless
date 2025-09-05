@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { pascalCase } from '~/utils/pascalCase';
+import { pascalCase } from '../../utils/pascalCase';
 import BaseComponentLoading from '../base/BaseComponentLoading.vue';
 import BaseComponentFailedLoading from '../base/BaseComponentFailedLoading.vue';
 
@@ -16,7 +16,7 @@ const renderLayoutBlock = (componentName: string) => {
   return defineAsyncComponent({
     loader: () =>
       import(`@/components/blocks/${pascalCase(componentName)}Block.vue`).catch(
-        () => import('~~/components/blocks/UnknownBlock.vue'),
+        () => import('../../components/blocks/UnknownBlock.vue'),
       ),
     loadingComponent: BaseComponentLoading,
     errorComponent: BaseComponentFailedLoading,
@@ -108,6 +108,12 @@ const assignMdColHandler = (colValue: string, colIndex: string | number) => {
   @media (--viewport-md-min) {
     padding-top: var(--section-spacing);
     padding-bottom: var(--section-spacing);
+  }
+
+  .container--fluid {
+    padding-left: 0;
+    padding-right: 0;
+    overflow-x: hidden;
   }
 
   &--no-spacing {

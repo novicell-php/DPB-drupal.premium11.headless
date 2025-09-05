@@ -7,15 +7,48 @@ const props = defineProps({
 });
 
 const mobileMenuOpen = ref(false);
+const bottomDrawerOpen = ref(false);
+const activeDrawerItems = ref([]);
+
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value;
+  if (mobileMenuOpen.value) {
+    document.body.classList.add('no-scroll');
+  } else {
+    document.body.classList.remove('no-scroll');
+    closeBottomDrawer();
+    currentDrawerKey.value = null;
+  }
 };
+
+const currentDrawerKey = ref(null);
+
+const openBottomDrawer = (items) => {
+  activeDrawerItems.value = items;
+  bottomDrawerOpen.value = true;
+};
+
+const closeBottomDrawer = () => {
+  bottomDrawerOpen.value = false;
+  activeDrawerItems.value = [];
+  currentDrawerKey.value = null;
+};
+
+provide('bottomDrawer', {
+  openBottomDrawer,
+  closeBottomDrawer,
+  bottomDrawerOpen: readonly(bottomDrawerOpen),
+});
+provide('currentDrawerKey', currentDrawerKey);
 
 const showHeader = ref(true);
 const lastScrollY = ref(0);
 const threshold = 10;
 
 const handleScroll = () => {
+  if (bottomDrawerOpen.value || mobileMenuOpen.value) {
+    return;
+  }
   const currentScrollY = window.scrollY;
 
   if (currentScrollY <= 0) {
@@ -39,49 +72,89 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    class="header__wrapper"
-    :class="{ 'header__wrapper--hidden': !showHeader }"
-    role="banner"
-    v-if="data"
-  >
-    <div class="header">
-      <div class="header__content">
-        <NuxtLink to="/" aria-label="Frontpage" class="header__logo-link">
-          <BaseLogo class="header__logo" />
-        </NuxtLink>
+  <div class="navigation-wrapper">
+    <div
+      class="header__wrapper"
+      :class="{ 'header__wrapper--hidden': !showHeader }"
+      role="banner"
+      v-if="data"
+    >
+      <div class="header">
+        <div class="header__content">
+          <NuxtLink to="/" aria-label="Frontpage" class="header__logo-link">
+            <BaseLogo class="header__logo" />
+          </NuxtLink>
 
-        <!-- Hamburger menu -->
-        <button
-          class="header__mobile-toggle"
-          aria-label="Toggle navigation menu"
-          @click="toggleMobileMenu"
-          :aria-expanded="mobileMenuOpen.toString()"
-        >
-          <span class="hamburger"></span>
-        </button>
-
-        <nav
-          class="header__nav"
-          :class="{ 'header__nav--open': mobileMenuOpen }"
-          role="navigation"
-          aria-label="Hovednavigation"
-        >
-          <HeaderItem
-            v-for="(item, index) in data?.items || []"
-            :key="index"
-            :node="item"
-            class="header__nav-item"
+          <!-- Hamburger menu -->
+          <button
+            class="header__mobile-toggle"
+            aria-label="Toggle navigation menu"
+            @click="toggleMobileMenu"
+            :aria-expanded="mobileMenuOpen.toString()"
           >
-            {{ item?.title }}
-          </HeaderItem>
-        </nav>
+            <span class="hamburger"></span>
+          </button>
+
+          <navigation
+            class="header__nav"
+            :class="{ 'header__nav--open': mobileMenuOpen }"
+            role="navigation"
+            aria-label="Hovednavigation"
+          >
+            <HeaderItem
+              v-for="(item, index) in data?.items || []"
+              :key="index"
+              :node="item"
+              class="header__nav-item"
+            >
+              {{ item?.title }}
+            </HeaderItem>
+          </navigation>
+        </div>
       </div>
     </div>
+
+    <!-- Bottom Drawer -->
+    <Teleport to="body">
+      <Transition name="bottom-drawer">
+        <div
+          v-if="bottomDrawerOpen"
+          class="bottom-drawer"
+          :class="{ 'bottom-drawer--mobile-menu-open': mobileMenuOpen }"
+        >
+          <div class="bottom-drawer__content">
+            <div class="bottom-drawer__items">
+              <NuxtLink
+                v-for="item in activeDrawerItems"
+                :key="item.id"
+                :to="item.url"
+                :target="item?.url_options?.attributes?.target"
+                class="bottom-drawer__item"
+                @click="
+                  toggleMobileMenu;
+                  closeBottomDrawer();
+                "
+              >
+                {{ item.title }}
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <style lang="postcss" scoped>
+.navigation-wrapper {
+  position: relative;
+}
+
+.router-link-exact-active {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary) !important;
+}
+
 .header {
   max-width: 1200px;
   margin: 0 auto;
@@ -195,6 +268,64 @@ onBeforeUnmount(() => {
   top: 0;
 }
 
+/* Bottom Drawer Styles */
+.bottom-drawer {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  background: var(--color-white);
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  top: var(--header-height);
+
+  &--mobile-menu-open {
+    top: var(--header-height);
+  }
+
+  &__content {
+    padding: 24px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__items {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  &__item {
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 12px 24px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    color: var(--color-text);
+
+    &:hover {
+      color: var(--color-primary);
+      background: rgba(var(--color-primary-rgb), 0.1);
+    }
+  }
+}
+
+/* Bottom Drawer Transitions */
+.bottom-drawer-enter-active,
+.bottom-drawer-leave-active {
+  transition: all 0.3s ease;
+}
+
+.bottom-drawer-enter-from,
+.bottom-drawer-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
 @media (--viewport-sm-max) {
   .header__nav {
     position: fixed;
@@ -228,6 +359,25 @@ onBeforeUnmount(() => {
 
   .header__mobile-toggle {
     display: block;
+  }
+
+  .bottom-drawer {
+    &__items {
+      flex-direction: column;
+      gap: 0;
+      padding: 0 24px;
+    }
+
+    &__item {
+      width: 100%;
+      text-align: center;
+      padding: 16px;
+      border-bottom: 1px solid #f3f4f6;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
   }
 }
 </style>
