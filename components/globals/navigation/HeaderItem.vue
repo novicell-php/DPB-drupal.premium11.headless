@@ -163,7 +163,7 @@ const removeNoScroll = () => {
     z-index: 1;
     display: none;
     padding: 5px 10px;
-    background-color: var(--color-dark);
+    background-color: var(--color-text);
     color: var(--color-white);
     border-radius: 4px;
     font-size: 14px;

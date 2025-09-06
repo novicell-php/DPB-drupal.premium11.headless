@@ -121,6 +121,10 @@ onBeforeUnmount(() => {
           v-if="bottomDrawerOpen"
           class="bottom-drawer"
           :class="{ 'bottom-drawer--mobile-menu-open': mobileMenuOpen }"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          :aria-hidden="bottomDrawerOpen ? 'false' : 'true'"
         >
           <div class="bottom-drawer__content">
             <div class="bottom-drawer__items">
@@ -131,7 +135,7 @@ onBeforeUnmount(() => {
                 :target="item?.url_options?.attributes?.target"
                 class="bottom-drawer__item"
                 @click="
-                  toggleMobileMenu;
+                  toggleMobileMenu();
                   closeBottomDrawer();
                 "
               >

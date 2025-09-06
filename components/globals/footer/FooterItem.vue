@@ -74,46 +74,31 @@ const hasChildren = computed(() => {
 }
 
 .footer-item {
-  &__wrapper {
-    padding: 5px;
-  }
-
   &__link {
-    color: var(--color-text);
     text-decoration: none;
+    color: var(--color-text);
+    width: fit-content;
+    transition: all 0.3s ease;
+    opacity: 1;
 
     &:hover {
+      opacity: 0.7;
       text-decoration: underline;
-      opacity: 1;
     }
 
     &--title {
-      color: var(--color-white);
       font-weight: 700;
       font-size: 16px;
       text-transform: uppercase;
-      opacity: 0.5;
-
-      &:hover {
-        text-decoration: none;
-        opacity: 0.5;
-      }
-
-      @media (--viewport-ms-max) {
-        /* mobile view */
-        font-weight: 400;
-        font-size: 18px;
-        line-height: 26px;
-      }
+      letter-spacing: 0.1em;
+      opacity: 0.8 !important;
+      text-decoration: none !important;
+      padding-bottom: 5px;
     }
   }
 
   &__children {
     display: grid;
-
-    @media (--viewport-ms-max) {
-      display: none;
-    }
 
     &--active {
       display: grid;
