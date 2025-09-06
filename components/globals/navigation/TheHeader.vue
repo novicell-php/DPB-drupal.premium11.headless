@@ -188,6 +188,7 @@ onBeforeUnmount(() => {
   &__logo-link {
     display: flex;
     align-items: center;
+    border-bottom: none !important;
   }
 
   &__nav {
@@ -302,14 +303,12 @@ onBeforeUnmount(() => {
     text-decoration: none;
     font-size: 16px;
     font-weight: 500;
-    padding: 12px 24px;
     transition: all 0.2s ease;
     white-space: nowrap;
     color: var(--color-text);
 
     &:hover {
-      color: var(--color-primary);
-      background: rgba(var(--color-primary-rgb), 0.1);
+      opacity: 0.7;
     }
   }
 }

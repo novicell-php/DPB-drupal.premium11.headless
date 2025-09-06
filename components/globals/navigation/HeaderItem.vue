@@ -14,6 +14,10 @@ const hasChildren = computed(() => {
   return below && below.length > 0;
 });
 
+const isActiveDrawerItem = computed(
+  () => currentDrawerKey.value === props.node?.title,
+);
+
 const closeDrawer = () => {
   bottomDrawer.closeBottomDrawer();
   currentDrawerKey.value = null;
@@ -26,7 +30,7 @@ const handleClick = () => {
 
   if (hasChildren.value) {
     if (currentDrawerKey.value === key) {
-      closeDrawer;
+      closeDrawer();
     } else {
       bottomDrawer.openBottomDrawer(props.node.below);
       currentDrawerKey.value = key;
@@ -59,6 +63,7 @@ const removeNoScroll = () => {
       <button
         v-else-if="hasChildren"
         class="header-item__trigger"
+        :class="{ 'is-active': isActiveDrawerItem }"
         type="button"
         @click="handleClick"
         :aria-label="node?.title + ' - Open submenu'"
@@ -66,7 +71,12 @@ const removeNoScroll = () => {
         <span class="header-item__link">
           {{ node?.title }}
         </span>
-        <NuxtIcon class="button__icon-after" name="chevron-down" fill />
+        <NuxtIcon
+          class="button__icon-after"
+          :class="{ 'button__icon-after--rotated': isActiveDrawerItem }"
+          name="chevron-down"
+          fill
+        />
       </button>
 
       <span
@@ -153,13 +163,15 @@ const removeNoScroll = () => {
     cursor: pointer;
     display: flex;
     align-items: center;
+    transition: border-color 0.3s ease;
+    border-bottom: 2px solid transparent;
 
     .nuxt-icon {
       position: absolute;
       top: 50%;
       right: 0;
       transform: translateY(-50%);
-      transition: transform 0.3s;
+      transition: transform 0.3s ease;
     }
 
     &:hover {
@@ -175,5 +187,14 @@ const removeNoScroll = () => {
   .header-item__children {
     display: none;
   }
+}
+
+.button__icon-after--rotated {
+  transform: translateY(-50%) rotate(180deg) !important;
+  transition: transform 0.3s ease;
+}
+
+.header-item__trigger.is-active {
+  border-bottom: 2px solid var(--color-primary);
 }
 </style>
