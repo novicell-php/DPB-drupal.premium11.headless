@@ -209,7 +209,10 @@ onBeforeUnmount(() => {
   &__logo-link {
     display: flex;
     align-items: center;
-    border-bottom: none !important;
+
+    &::after {
+      display: none;
+    }
   }
 
   &__nav {
