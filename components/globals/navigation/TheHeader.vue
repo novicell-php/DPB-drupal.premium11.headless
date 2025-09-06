@@ -146,13 +146,34 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="postcss" scoped>
-.navigation-wrapper {
+.router-link-exact-active,
+.router-link-active {
   position: relative;
 }
 
-.router-link-exact-active {
-  color: var(--color-primary);
-  border-bottom: 2px solid var(--color-primary) !important;
+.router-link-exact-active::after,
+.router-link-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  height: 2px;
+  background-color: var(--color-text);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  display: block;
+  box-sizing: border-box;
+}
+
+.router-link-exact-active::after,
+.router-link-active::after {
+  transform: scaleX(1);
+}
+
+.navigation-wrapper {
+  position: relative;
 }
 
 .header {
@@ -194,6 +215,7 @@ onBeforeUnmount(() => {
   &__nav {
     display: flex;
     gap: 24px;
+    align-items: center;
   }
 
   &__nav-item {
@@ -201,6 +223,7 @@ onBeforeUnmount(() => {
     font-weight: 500;
     color: var(--color-gray-900);
     transition: color 0.3s ease;
+    white-space: nowrap;
 
     &:hover {
       opacity: 0.7;
@@ -371,7 +394,6 @@ onBeforeUnmount(() => {
       width: 100%;
       text-align: center;
       padding: 16px;
-      border-bottom: 1px solid #f3f4f6;
 
       &:last-child {
         border-bottom: none;
