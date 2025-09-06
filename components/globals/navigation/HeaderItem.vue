@@ -53,7 +53,7 @@ const removeNoScroll = () => {
         v-if="node?.url && !hasChildren"
         :to="node?.url"
         :target="node?.url_options?.attributes?.target"
-        class="header-item__link"
+        class="header-item__link header-item__link--link"
         :aria-label="'Visit ' + node?.title"
         @click="removeNoScroll"
       >
@@ -68,7 +68,10 @@ const removeNoScroll = () => {
         @click="handleClick"
         :aria-label="node?.title + ' - Open submenu'"
       >
-        <span class="header-item__link">
+        <span
+          class="header-item__link"
+          :class="{ 'is-active': isActiveDrawerItem }"
+        >
           {{ node?.title }}
         </span>
         <NuxtIcon
@@ -96,11 +99,6 @@ const removeNoScroll = () => {
 </template>
 
 <style lang="postcss" scoped>
-.router-link-exact-active {
-  color: var(--color-primary);
-  border-bottom: 2px solid var(--color-primary) !important;
-}
-
 .header-item {
   position: relative;
 
@@ -109,6 +107,8 @@ const removeNoScroll = () => {
     display: flex;
     align-items: center;
     font-size: 16px;
+    display: flex;
+    justify-content: center;
 
     &:hover {
       .header-item__tooltip {
@@ -118,16 +118,42 @@ const removeNoScroll = () => {
     }
   }
 
-  &__link {
+  /* All links */
+  &__link,
+  &__link--link {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+    line-height: 1.2;
     color: var(--color-text);
     text-decoration: none;
     font-size: 16px;
     transition: color 0.2s;
-    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
 
-    &:hover {
-      color: var(--color-primary);
-    }
+  &__link::after,
+  &__link--link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: 0;
+    height: 2px; /* consistent thickness */
+    background-color: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: all 0.3s ease; /* change from transform only to all */
+    display: block;
+    box-sizing: border-box;
+  }
+
+  /* Active state */
+  &__link.is-active::after,
+  &__link--link.is-active::after,
+  .router-link-exact-active.header-item__link::after,
+  .router-link-exact-active.header-item__link--link::after {
+    transform: scaleX(1);
   }
 
   &__tooltip {
@@ -138,7 +164,7 @@ const removeNoScroll = () => {
     display: none;
     padding: 5px 10px;
     background-color: var(--color-dark);
-    color: #fff;
+    color: var(--color-white);
     border-radius: 4px;
     font-size: 14px;
     white-space: nowrap;
@@ -156,6 +182,7 @@ const removeNoScroll = () => {
   &__trigger {
     position: relative;
     padding-right: 30px;
+    padding-left: 0;
     color: var(--color-text);
     font-size: 16px;
     background: none;
@@ -164,7 +191,6 @@ const removeNoScroll = () => {
     display: flex;
     align-items: center;
     transition: border-color 0.3s ease;
-    border-bottom: 2px solid transparent;
 
     .nuxt-icon {
       position: absolute;
@@ -192,9 +218,5 @@ const removeNoScroll = () => {
 .button__icon-after--rotated {
   transform: translateY(-50%) rotate(180deg) !important;
   transition: transform 0.3s ease;
-}
-
-.header-item__trigger.is-active {
-  border-bottom: 2px solid var(--color-primary);
 }
 </style>
