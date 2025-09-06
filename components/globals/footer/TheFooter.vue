@@ -2,24 +2,7 @@
 import { useFooterDataStore } from '~/stores/footerData';
 
 const footerDataStore = useFooterDataStore();
-const computedFooterData = computed(() => {
-  return footerDataStore.footerData || {};
-});
-
-const chunkedFooterData = computed(() => {
-  const footerItems = computedFooterData.value?.items;
-  if (!footerItems) {
-    return [];
-  }
-
-  const chunks = [];
-  // Split the footer items into chunks of 4 items per column
-  const chunkSize = 4;
-  for (let i = 0; i < footerItems.length; i += chunkSize) {
-    chunks.push(footerItems.slice(i, i + chunkSize));
-  }
-  return chunks;
-});
+const computedFooterData = computed(() => footerDataStore.footerData || {});
 </script>
 
 <template>
@@ -27,12 +10,12 @@ const chunkedFooterData = computed(() => {
     <div class="container">
       <div class="row">
         <div
-          v-for="(chunk, index) in chunkedFooterData"
+          v-for="(item, index) in computedFooterData?.items || []"
           :key="index"
-          class="col-xs-12 col-sm-12 col-md-3"
+          class="col-xs-6 col-sm-6 col-md-3"
         >
           <div class="footer__navigation-items-wrapper">
-            <TheFooterContainer :footer-menu-data="chunk" />
+            <TheFooterContainer :footer-menu-data="[item]" />
           </div>
         </div>
       </div>
@@ -42,8 +25,12 @@ const chunkedFooterData = computed(() => {
 
 <style lang="postcss" scoped>
 .footer {
-  padding: 60px 0 60px;
+  padding: 30px 0 40px;
   border-top: 1px solid var(--color-gray-11);
   box-shadow: 0 2px 6px var(--header-shadow);
+
+  &__navigation-items-wrapper {
+    padding: 10px 0;
+  }
 }
 </style>
