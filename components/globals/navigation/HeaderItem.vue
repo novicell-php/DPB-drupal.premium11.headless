@@ -139,7 +139,7 @@ const removeNoScroll = () => {
     left: 0;
     width: 100%;
     bottom: 0;
-    height: 2px; /* consistent thickness */
+    height: 1px;
     background-color: var(--color-primary);
     transform: scaleX(0);
     transform-origin: left;

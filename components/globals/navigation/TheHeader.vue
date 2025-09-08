@@ -162,7 +162,7 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100%;
   bottom: 0;
-  height: 2px;
+  height: 1px;
   background-color: var(--color-text);
   transform: scaleX(0);
   transform-origin: left;
