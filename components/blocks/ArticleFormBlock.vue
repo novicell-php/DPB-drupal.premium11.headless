@@ -242,7 +242,7 @@ const updateContent = async () => {
       line-height: 1.5;
       border: 1px solid var(--theme-text-color);
       background-color: var(--color-white);
-      color: var(--theme-text-color);
+      color: var(--color-text);
       width: 100%;
       height: 40px;
       box-sizing: border-box;
@@ -354,6 +354,110 @@ const updateContent = async () => {
   &__no-articles {
     text-align: center;
     margin-top: 20px;
+  }
+}
+
+.container--fluid {
+  .layout-block--article_form {
+    .article-overview {
+      &__cards {
+        grid-template-columns: repeat(6, 1fr);
+
+        @media (--viewport-lg-max) {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media (--viewport-md-max) {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (--viewport-sm-max) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (--viewport-xs-max) {
+          grid-template-columns: 1fr;
+          gap: 50px;
+        }
+      }
+    }
+  }
+}
+
+.container--narrow {
+  .layout-block--article_form {
+    .article-overview {
+      &__cards {
+        grid-template-columns: repeat(3, 1fr);
+
+        @media (--viewport-lg-max) {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (--viewport-md-max) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (--viewport-sm-max) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (--viewport-xs-max) {
+          grid-template-columns: 1fr;
+          gap: 50px;
+        }
+      }
+    }
+  }
+}
+
+.col-md-6 .layout-block--article_form {
+  .article-overview {
+    &__cards {
+      grid-template-columns: repeat(2, 1fr);
+
+      @media (--viewport-lg-max) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (--viewport-md-max) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (--viewport-sm-max) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (--viewport-xs-max) {
+        grid-template-columns: 1fr;
+        gap: 50px;
+      }
+    }
+  }
+}
+
+.col-md-8 .layout-block--article_form {
+  .article-overview {
+    &__cards {
+      grid-template-columns: repeat(3, 1fr);
+
+      @media (--viewport-lg-max) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media (--viewport-md-max) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media (--viewport-sm-max) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (--viewport-xs-max) {
+        grid-template-columns: 1fr;
+        gap: 50px;
+      }
+    }
   }
 }
 </style>

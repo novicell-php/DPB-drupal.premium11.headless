@@ -93,7 +93,7 @@ const hasChildren = computed(() => {
       letter-spacing: 0.1em;
       opacity: 0.8 !important;
       text-decoration: none !important;
-      padding-bottom: 5px;
+      padding-bottom: 3px;
     }
   }
 

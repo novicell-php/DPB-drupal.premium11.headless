@@ -181,7 +181,7 @@ const removeNoScroll = () => {
 
   &__trigger {
     position: relative;
-    padding-right: 30px;
+    padding-right: 22px;
     padding-left: 0;
     color: var(--color-text);
     font-size: 16px;
