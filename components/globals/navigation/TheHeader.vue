@@ -134,10 +134,7 @@ onBeforeUnmount(() => {
                 :to="item.url"
                 :target="item?.url_options?.attributes?.target"
                 class="bottom-drawer__item"
-                @click="
-                  toggleMobileMenu();
-                  closeBottomDrawer();
-                "
+                @click="closeBottomDrawer()"
               >
                 {{ item.title }}
               </NuxtLink>
