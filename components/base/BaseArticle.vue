@@ -13,10 +13,10 @@ const props = defineProps({
 <template>
   <div class="base-article">
     <NuxtLink :to="blockData.url" class="base-article__link">
+      <div class="base-article__date" v-if="blockData.field_list_date">
+        {{ blockData.field_list_date }}
+      </div>
       <div class="base-article__body">
-        <div class="base-article__date" v-if="blockData.field_list_date">
-          {{ blockData.field_list_date }}
-        </div>
         <div class="base-article__image">
           <div v-if="blockData.field_list_media?.field_media_image">
             <BaseImage :image="blockData.field_list_media" />
@@ -84,6 +84,9 @@ const props = defineProps({
 
   &__body {
     flex-grow: 1;
+    border-right: 1px solid var(--theme-text-color);
+    border-left: 1px solid var(--theme-text-color);
+    border-top: 1px solid var(--theme-text-color);
   }
 
   &__image {
@@ -141,9 +144,10 @@ const props = defineProps({
 
   &__content {
     padding: 10px;
+    margin-bottom: 10px;
     font-size: 16px;
     line-height: 1.5;
-    min-height: 130px;
+    min-height: 210px;
   }
 
   &__button {
