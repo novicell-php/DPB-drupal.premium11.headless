@@ -109,6 +109,11 @@ const computedItems = computed(() =>
     border-bottom: 2px solid var(--theme-text-color);
   }
 
+  .accordion__trigger:focus:not(.accordion__trigger--active)
+    .accordion__title-text {
+    border-bottom: 2px solid transparent;
+  }
+
   &__item {
     overflow: hidden;
     color: var(--theme-text-color);
