@@ -40,9 +40,7 @@ const handleClickOutside = (e: any) => {
 };
 
 const setDefaultVal = () => {
-  // set default value on mount
   const defaultItem = availableFacets.value.find((item) => {
-    // must be '==' not '===', sometimes numbers come as strings
     return item.key == defaultSelected.value;
   });
 
