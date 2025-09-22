@@ -1,5 +1,4 @@
-import { Transition } from 'nuxt/dist/app/compat/capi';
-<script setup lang="ts">
+<script setup>
 import { useModalStore } from '~~/stores/modal';
 const modalStore = useModalStore();
 
