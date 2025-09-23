@@ -12,12 +12,12 @@ const activeDrawerItems = ref([]);
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value;
+
   if (mobileMenuOpen.value) {
     document.body.classList.add('no-scroll');
   } else {
     document.body.classList.remove('no-scroll');
     closeBottomDrawer();
-    currentDrawerKey.value = null;
   }
 };
 
@@ -69,6 +69,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll);
 });
+
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false;
+  document.body.classList.remove('no-scroll');
+  closeBottomDrawer();
+};
 </script>
 
 <template>
@@ -105,22 +111,31 @@ onBeforeUnmount(() => {
               v-for="(item, index) in data?.items || []"
               :key="index"
               :node="item"
-              class="header__nav-item"
+              class="header__nav-item header__nav-item--desktop"
             >
               {{ item?.title }}
             </HeaderItem>
+
+            <MobileHeaderItem
+              v-for="(item, index) in data?.items || []"
+              :key="index"
+              :node="item"
+              class="header__nav-item header__nav-item--mobile"
+              @close-mobile-drawer="closeMobileMenu()"
+            >
+              {{ item?.title }}
+            </MobileHeaderItem>
           </navigation>
         </div>
       </div>
     </div>
 
-    <!-- Bottom Drawer -->
+    <!-- Desktop Nav Drawer -->
     <Teleport to="body">
       <Transition name="bottom-drawer">
         <div
           v-if="bottomDrawerOpen"
           class="bottom-drawer"
-          :class="{ 'bottom-drawer--mobile-menu-open': mobileMenuOpen }"
           role="dialog"
           aria-modal="true"
           tabindex="-1"
@@ -231,6 +246,22 @@ onBeforeUnmount(() => {
 
     &:hover {
       opacity: 0.7;
+    }
+
+    &--mobile {
+      display: none;
+    }
+    &--desktop {
+      display: block;
+    }
+
+    @media (--viewport-sm-max) {
+      &--desktop {
+        display: none;
+      }
+      &--mobile {
+        display: block;
+      }
     }
   }
 
@@ -371,6 +402,8 @@ onBeforeUnmount(() => {
 
     &--open {
       transform: translateX(0);
+      text-align: left;
+      align-items: flex-start;
     }
   }
 
