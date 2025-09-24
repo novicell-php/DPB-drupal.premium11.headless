@@ -147,11 +147,8 @@ const closeMobileMenu = () => {
 
           <navigation
             class="header__nav"
-            :class="{ 'header__nav--open': mobileMenuOpen }"
             role="navigation"
             aria-label="Hovednavigation"
-            ref="mobileDrawerRef"
-            :inert="!mobileMenuOpen"
           >
             <HeaderItem
               v-for="(item, index) in data?.items || []"
@@ -161,7 +158,16 @@ const closeMobileMenu = () => {
             >
               {{ item?.title }}
             </HeaderItem>
+          </navigation>
 
+          <navigation
+            v-if="mobileMenuOpen"
+            class="header__nav"
+            :class="{ 'header__nav--open': mobileMenuOpen }"
+            role="navigation"
+            aria-label="Hovednavigation"
+            ref="mobileDrawerRef"
+          >
             <MobileHeaderItem
               v-for="(item, index) in data?.items || []"
               :key="index"
