@@ -88,19 +88,20 @@ const closeMobileDrawer = () => {
       </span>
     </div>
 
-    <div
-      v-if="hasChildren"
-      class="header-item__children"
-      :class="{ 'header-item__children--active': isActiveDrawerItem }"
-    >
-      <MobileHeaderItem
-        v-for="(child, i) in node?.below"
-        :key="i"
-        :node="child"
-        class="header-item__child"
-        @closeMobileDrawer="closeMobileDrawer"
-      />
-    </div>
+    <Transition name="accordion">
+      <div
+        v-if="hasChildren && isActiveDrawerItem"
+        class="header-item__children header-item__children--active"
+      >
+        <MobileHeaderItem
+          v-for="(child, i) in node?.below"
+          :key="i"
+          :node="child"
+          class="header-item__child"
+          @closeMobileDrawer="closeMobileDrawer"
+        />
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -210,5 +211,24 @@ const closeMobileDrawer = () => {
 .button__icon-after--rotated {
   transform: translateY(-50%) rotate(180deg) !important;
   transition: transform 0.3s ease;
+}
+
+.accordion-enter-from,
+.accordion-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.accordion-enter-active,
+.accordion-leave-active {
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.accordion-enter-to,
+.accordion-leave-from {
+  max-height: 1000px;
+  opacity: 1;
 }
 </style>

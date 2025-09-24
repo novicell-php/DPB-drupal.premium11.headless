@@ -5,14 +5,6 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
   },
 
-  devtools: {
-    enabled: true,
-
-    timeline: {
-      enabled: true,
-    },
-  },
-
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     prefetchLinks: true,
