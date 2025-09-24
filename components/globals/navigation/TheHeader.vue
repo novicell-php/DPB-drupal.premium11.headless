@@ -1,4 +1,11 @@
 <script setup>
+import { createFocusTrap } from 'focus-trap';
+
+const mobileDrawerRef = ref(null);
+let mobileFocusTrapInstance = null;
+
+let focusTrapInstance = null;
+
 const props = defineProps({
   data: {
     type: Object,
@@ -9,27 +16,57 @@ const props = defineProps({
 const mobileMenuOpen = ref(false);
 const bottomDrawerOpen = ref(false);
 const activeDrawerItems = ref([]);
+const drawerRef = ref(null);
+let lastTriggerEl = null;
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value;
 
   if (mobileMenuOpen.value) {
     document.body.classList.add('no-scroll');
+    nextTick(() => {
+      mobileFocusTrapInstance = createFocusTrap(mobileDrawerRef.value, {
+        escapeDeactivates: true,
+        allowOutsideClick: true,
+        fallbackFocus: mobileDrawerRef.value,
+        onDeactivate: () => {
+          mobileMenuOpen.value = false;
+          document.body.classList.remove('no-scroll');
+        },
+      });
+      mobileFocusTrapInstance.activate();
+    });
   } else {
     document.body.classList.remove('no-scroll');
+    mobileFocusTrapInstance?.deactivate();
     closeBottomDrawer();
   }
 };
 
 const currentDrawerKey = ref(null);
 
-const openBottomDrawer = (items) => {
+const openBottomDrawer = (items, event) => {
   activeDrawerItems.value = items;
   bottomDrawerOpen.value = true;
+  lastTriggerEl = event?.currentTarget || null;
+  nextTick(() => {
+    focusTrapInstance = createFocusTrap(drawerRef.value, {
+      escapeDeactivates: true,
+      allowOutsideClick: true,
+      fallbackFocus: drawerRef.value,
+      onDeactivate: () => {
+        bottomDrawerOpen.value = false;
+        activeDrawerItems.value = [];
+        currentDrawerKey.value = null;
+        lastTriggerEl?.focus();
+      },
+    });
+    focusTrapInstance.activate();
+  });
 };
 
 const closeBottomDrawer = () => {
-  bottomDrawerOpen.value = false;
+  focusTrapInstance?.deactivate();
   activeDrawerItems.value = [];
   currentDrawerKey.value = null;
 };
@@ -74,6 +111,7 @@ const closeMobileMenu = () => {
   mobileMenuOpen.value = false;
   document.body.classList.remove('no-scroll');
   closeBottomDrawer();
+  mobileFocusTrapInstance?.deactivate();
 };
 </script>
 
@@ -101,11 +139,19 @@ const closeMobileMenu = () => {
             <span class="hamburger"></span>
           </button>
 
+          <div
+            v-if="mobileMenuOpen"
+            class="header__overlay"
+            @click="closeMobileMenu"
+          ></div>
+
           <navigation
             class="header__nav"
             :class="{ 'header__nav--open': mobileMenuOpen }"
             role="navigation"
             aria-label="Hovednavigation"
+            ref="mobileDrawerRef"
+            :inert="!mobileMenuOpen"
           >
             <HeaderItem
               v-for="(item, index) in data?.items || []"
@@ -140,6 +186,7 @@ const closeMobileMenu = () => {
           aria-modal="true"
           tabindex="-1"
           :aria-hidden="bottomDrawerOpen ? 'false' : 'true'"
+          ref="drawerRef"
         >
           <div class="bottom-drawer__content">
             <div class="bottom-drawer__items">
@@ -384,7 +431,20 @@ const closeMobileMenu = () => {
 }
 
 @media (--viewport-sm-max) {
+  .header__overlay {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - var(--header-height));
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+  }
+}
+
+@media (--viewport-sm-max) {
   .header__nav {
+    z-index: 999;
     position: fixed;
     top: var(--header-height);
     right: 0;
@@ -412,7 +472,7 @@ const closeMobileMenu = () => {
   }
 
   .header__nav .header__nav-item {
-    padding: 12px 0;
+    padding: 6px 0;
     font-size: 16px;
   }
 
@@ -421,21 +481,7 @@ const closeMobileMenu = () => {
   }
 
   .bottom-drawer {
-    &__items {
-      flex-direction: column;
-      gap: 0;
-      padding: 0 24px;
-    }
-
-    &__item {
-      width: 100%;
-      text-align: center;
-      padding: 16px;
-
-      &:last-child {
-        border-bottom: none;
-      }
-    }
+    display: none;
   }
 }
 </style>

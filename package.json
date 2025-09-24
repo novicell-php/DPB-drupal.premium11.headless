@@ -17,7 +17,6 @@
   "devDependencies": {
     "@novicell/eslint-config-nuxt": "^0.2.5",
     "@novicell/postcss-config": "^0.4.2",
-    "@nuxt/devtools": "^2.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.20.1",
     "eslint-plugin-vue": "^9.32.0",
@@ -31,6 +30,7 @@
     "axios": "^1.7.9",
     "dotenv": "^16.4.5",
     "fast-xml-parser": "^4.5.1",
+    "focus-trap": "^7.6.5",
     "nuxt-icons": "^3.2.1",
     "pinia": "3.0.1",
     "swiper": "^8.4.6",
