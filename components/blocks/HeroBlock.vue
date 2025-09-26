@@ -3,18 +3,19 @@ const props = defineProps({
   blockData: Object,
 });
 
+console.log(props.blockData);
+
 // Checking if overlay is turned on without image
 const isDarkText = computed(() => {
   return (
-    !props.blockData?.field_hero?.field_overlay &&
-    props.blockData?.field_hero?.field_background === null
+    !props.blockData?.field_overlay &&
+    props.blockData?.field_background === null
   );
 });
 
 const isDarkBg = computed(() => {
   return (
-    props.blockData?.field_hero?.field_overlay &&
-    props.blockData?.field_hero?.field_background === null
+    props.blockData?.field_overlay && props.blockData?.field_background === null
   );
 });
 </script>
@@ -24,31 +25,27 @@ const isDarkBg = computed(() => {
     <BaseMedia
       class="hero__media"
       :block-data="blockData"
-      :component-type-class="blockData.field_hero?.bundle"
+      :component-type-class="blockData?.bundle"
       loading="eager"
     />
     <div
       class="hero__content"
       :class="[
-        blockData.field_hero?.field_text_position,
+        blockData?.field_text_position,
         { 'hero__content--dark': isDarkText },
       ]"
     >
-      <div v-if="blockData.field_hero?.field_text !== null" class="hero__text">
-        <BaseRte :content="blockData.field_hero?.field_text" />
+      <div v-if="blockData.field_text !== null" class="hero__text">
+        <BaseRte :content="blockData.field_text" />
       </div>
       <BaseButton
-        v-if="blockData.field_hero?.field_cta !== null"
-        :button-data="blockData.field_hero?.field_cta"
+        v-if="blockData.field_cta !== null"
+        :button-data="blockData.field_cta"
         :link="
-          blockData.field_hero?.field_cta?.class &&
-          blockData.field_hero?.field_cta?.class != 'button--normal'
+          blockData.field_cta?.class &&
+          blockData.field_cta?.class != 'button--normal'
         "
-        :color="
-          blockData.field_hero?.field_cta?.class == 'button--normal'
-            ? ''
-            : 'white'
-        "
+        :color="blockData.field_cta?.class == 'button--normal' ? '' : 'white'"
       />
     </div>
   </div>

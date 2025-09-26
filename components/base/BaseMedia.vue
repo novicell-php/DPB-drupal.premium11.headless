@@ -11,17 +11,17 @@ const props = defineProps({
 <template>
   <div class="base-media">
     <BaseImage
-      v-if="blockData?.field_hero?.field_background?.bundle === 'image'"
-      :image="blockData.field_hero?.field_background"
-      :is-overlay="blockData.field_hero?.field_overlay"
+      v-if="blockData?.field_background?.bundle === 'image'"
+      :image="blockData.field_background"
+      :is-overlay="blockData.field_overlay"
       :component-type-class="blockData.bundle"
       :loading="loading"
     />
 
     <!-- Needs improvements!! Not handling if video is uploaded -->
     <BaseVideo
-      v-if="blockData?.field_hero?.field_background?.bundle === 'remote_video'"
-      :video="blockData.field_hero?.field_background"
+      v-if="blockData?.field_background?.bundle === 'remote_video'"
+      :video="blockData.field_background"
       :component-type-class="blockData.bundle"
     />
   </div>
