@@ -30,8 +30,8 @@ const props = defineProps({
   &__text {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.9rem;
     position: relative;
     background-color: transparent;
   }
