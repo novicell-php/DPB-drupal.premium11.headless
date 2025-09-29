@@ -460,4 +460,12 @@ const updateContent = async () => {
     }
   }
 }
+
+.col-md-4 .layout-block--article_form {
+  .article-overview {
+    &__cards {
+      grid-template-columns: 1fr;
+    }
+  }
+}
 </style>

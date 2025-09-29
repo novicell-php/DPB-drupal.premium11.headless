@@ -3,8 +3,6 @@ const props = defineProps({
   blockData: Object,
 });
 
-console.log(props.blockData);
-
 // Checking if overlay is turned on without image
 const isDarkText = computed(() => {
   return (
