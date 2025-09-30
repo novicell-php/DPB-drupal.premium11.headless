@@ -5,6 +5,11 @@ const props = defineProps({
     type: String as () => 'lazy' | 'eager' | undefined,
     default: 'lazy',
   },
+  autoplay: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 </script>
 
@@ -23,6 +28,7 @@ const props = defineProps({
       v-if="blockData?.field_background?.bundle === 'remote_video'"
       :video="blockData.field_background"
       :component-type-class="blockData.bundle"
+      :autoplay="autoplay"
     />
   </div>
 </template>
