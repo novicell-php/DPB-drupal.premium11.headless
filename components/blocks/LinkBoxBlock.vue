@@ -171,8 +171,14 @@ const props = defineProps<{
     z-index: 2;
     opacity: 0;
     transition:
-      opacity 0.25s ease,
-      transform 0.25s ease;
+      opacity 0.25s ease 0s,
+      transform 0.25s ease 0s;
+  }
+
+  .link-box__card:hover &__card-content,
+  .link-box__card:focus-within &__card-content {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0);
     transition-delay: 0.35s;
   }
 
