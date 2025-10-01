@@ -27,8 +27,7 @@
 .image-fallback {
   position: relative;
   width: 100%;
-  height: 0;
-  padding-bottom: calc(100% * 13 / 23); /* match API image ratio */
+  height: 100%;
   background-color: #e0e0e0;
   overflow: hidden;
 

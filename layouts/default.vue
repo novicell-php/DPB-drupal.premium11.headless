@@ -5,5 +5,5 @@
     <slot></slot>
   </div>
   <TheFooter />
-  <TheModal />
+  <!-- <TheModal /> -->
 </template>
