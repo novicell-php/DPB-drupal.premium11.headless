@@ -135,6 +135,7 @@ const closeMobileMenu = () => {
             aria-label="Toggle navigation menu"
             @click="toggleMobileMenu"
             :aria-expanded="mobileMenuOpen.toString()"
+            :aria-controls="'mobile-menu'"
           >
             <span class="hamburger"></span>
           </button>
