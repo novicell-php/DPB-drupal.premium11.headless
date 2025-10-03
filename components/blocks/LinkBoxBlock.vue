@@ -234,7 +234,7 @@ const props = defineProps<{
 .col-md-8 .layout-block--link_box {
   .link-box {
     &__card {
-      flex-basis: 50%;
+      flex-basis: 100%;
     }
   }
 }
