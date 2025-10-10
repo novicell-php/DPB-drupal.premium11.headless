@@ -3,7 +3,7 @@
     ********************/
 
   /* Primary */
-  --color-primary: #020420;
+  --color-primary: #263ed3;
   --color-primary-dark: #cf1d1f;
   --color-primary-darkest: #a91719;
 
@@ -38,6 +38,7 @@
   --color-gray-16: #d9d9d9;
   --color-gray-11: #e5e5e5;
   --color-gray-6: #f1f1f1;
+  --color-gray: #b0afaf;
   --color-white: #fff;
   --color-text: #383838;
   --color-disabled: var(--color-gray-6);

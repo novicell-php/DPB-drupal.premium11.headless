@@ -165,3 +165,44 @@
 .announcement-slide-leave-from {
   max-height: 200px; /* large enough to cover expected content */
 }
+
+.submenu-fade-enter-active {
+  transition:
+    opacity 0.25s ease-out,
+    transform 0.25s ease-out;
+}
+
+.submenu-fade-leave-active {
+  transition:
+    opacity 0.2s ease-in,
+    transform 0.2s ease-in;
+}
+
+.submenu-fade-enter-from,
+.submenu-fade-leave-to {
+  opacity: 0;
+  transform: translateY(6px) scale(0.95);
+}
+
+.submenu-fade-enter-to,
+.submenu-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.header-item__submenu--nested.submenu-fade-enter-from,
+.header-item__submenu--nested.submenu-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+
+.header-item__submenu--nested.submenu-fade-enter-to,
+.header-item__submenu--nested.submenu-fade-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.submenu-fade-enter-active,
+.submenu-fade-leave-active {
+  will-change: opacity, transform;
+}
