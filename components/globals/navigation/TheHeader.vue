@@ -16,36 +16,45 @@ const showHeader = ref(true);
 const lastScrollY = ref(0);
 const threshold = 10;
 
-const toggleMobileMenu = () => {
-  mobileMenuOpen.value = !mobileMenuOpen.value;
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false;
+  document.body.classList.remove('no-scroll');
 
-  if (mobileMenuOpen.value) {
-    document.body.classList.add('no-scroll');
+  if (mobileFocusTrapInstance) {
+    mobileFocusTrapInstance.deactivate();
+    mobileFocusTrapInstance = null;
+  }
+};
 
-    nextTick(() => {
-      if (mobileMenuWrapperRef.value) {
-        mobileFocusTrapInstance = createFocusTrap(mobileMenuWrapperRef.value, {
-          escapeDeactivates: true,
-          clickOutsideDeactivates: true,
-          allowOutsideClick: true,
-          initialFocus:
-            mobileMenuWrapperRef.value.querySelector(
-              'a, button, [tabindex]:not([tabindex="-1"])',
-            ) || mobileMenuWrapperRef.value,
-          onDeactivate: () => {
-            const toggler = document.querySelector('.header__mobile-toggler');
-            if (toggler) toggler.focus();
-          },
-        });
-        mobileFocusTrapInstance.activate();
-      }
-    });
-  } else {
-    document.body.classList.remove('no-scroll');
-    if (mobileFocusTrapInstance) {
-      mobileFocusTrapInstance.deactivate();
-      mobileFocusTrapInstance = null;
+const openMobileMenu = () => {
+  mobileMenuOpen.value = true;
+  document.body.classList.add('no-scroll');
+
+  nextTick(() => {
+    if (mobileMenuWrapperRef.value) {
+      mobileFocusTrapInstance = createFocusTrap(mobileMenuWrapperRef.value, {
+        escapeDeactivates: true,
+        clickOutsideDeactivates: true,
+        allowOutsideClick: true,
+        initialFocus:
+          mobileMenuWrapperRef.value.querySelector(
+            'a, button, [tabindex]:not([tabindex="-1"])',
+          ) || mobileMenuWrapperRef.value,
+        onDeactivate: () => {
+          const toggler = document.querySelector('.header__mobile-toggler');
+          if (toggler) toggler.focus();
+        },
+      });
+      mobileFocusTrapInstance.activate();
     }
+  });
+};
+
+const toggleMobileMenu = () => {
+  if (mobileMenuOpen.value) {
+    closeMobileMenu();
+  } else {
+    openMobileMenu();
   }
 };
 
@@ -69,6 +78,12 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll);
+  // Cleanup on unmount
+  if (mobileFocusTrapInstance) {
+    mobileFocusTrapInstance.deactivate();
+    mobileFocusTrapInstance = null;
+  }
+  document.body.classList.remove('no-scroll');
 });
 </script>
 
@@ -125,7 +140,7 @@ onBeforeUnmount(() => {
                 <button
                   class="header__mobile-close"
                   aria-label="Close navigation menu"
-                  @click="toggleMobileMenu"
+                  @click="closeMobileMenu"
                 >
                   ✕
                 </button>
@@ -137,7 +152,7 @@ onBeforeUnmount(() => {
                   :key="index"
                   :node="item"
                   class="header__nav-item header__nav-item--mobile"
-                  @close-menu="mobileMenuOpen = false"
+                  @close-menu="closeMobileMenu"
                 >
                   {{ item?.title }}
                 </MobileHeaderItem>
