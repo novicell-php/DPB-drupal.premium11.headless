@@ -8,51 +8,45 @@ const props = defineProps({
   },
 });
 
-// TODO:
-// Mobile:
-// Create MobileHeaderItem component for mobile menu items
-// Add focus trap to mobile menu
-// Disable / Enable scrolling when mobile menu is open/closed
-// Animate mobile menu opening/closing (opening - coming up from the top)
-// Close mobile menu on navigation
-// Accessibility: aria-expanded, aria-controls, aria-hidden
-
 const mobileMenuOpen = ref(false);
 const mobileMenuRef = ref(null);
+const mobileMenuWrapperRef = ref(null);
 let mobileFocusTrapInstance = null;
-let focusTrapInstance = null;
-
 const showHeader = ref(true);
 const lastScrollY = ref(0);
 const threshold = 10;
+
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value;
 
   if (mobileMenuOpen.value) {
     document.body.classList.add('no-scroll');
+
+    nextTick(() => {
+      if (mobileMenuWrapperRef.value) {
+        mobileFocusTrapInstance = createFocusTrap(mobileMenuWrapperRef.value, {
+          escapeDeactivates: true,
+          clickOutsideDeactivates: true,
+          allowOutsideClick: true,
+          initialFocus:
+            mobileMenuWrapperRef.value.querySelector(
+              'a, button, [tabindex]:not([tabindex="-1"])',
+            ) || mobileMenuWrapperRef.value,
+          onDeactivate: () => {
+            const toggler = document.querySelector('.header__mobile-toggler');
+            if (toggler) toggler.focus();
+          },
+        });
+        mobileFocusTrapInstance.activate();
+      }
+    });
   } else {
     document.body.classList.remove('no-scroll');
+    if (mobileFocusTrapInstance) {
+      mobileFocusTrapInstance.deactivate();
+      mobileFocusTrapInstance = null;
+    }
   }
-
-  // if (mobileMenuOpen.value) {
-  //   document.body.classList.add('no-scroll');
-  //   nextTick(() => {
-  //     mobileFocusTrapInstance = createFocusTrap(mobileMenuRef.value, {
-  //       escapeDeactivates: true,
-  //       allowOutsideClick: true,
-  //       fallbackFocus: mobileMenuRef.value,
-  //       onDeactivate: () => {
-  //         mobileMenuOpen.value = false;
-  //         document.body.classList.remove('no-scroll');
-  //       },
-  //     });
-  //     mobileFocusTrapInstance.activate();
-  //   });
-  // } else {
-  //   document.body.classList.remove('no-scroll');
-  //   mobileFocusTrapInstance?.deactivate();
-  //   closeBottomDrawer();
-  // }
 };
 
 const handleScroll = () => {
@@ -68,13 +62,6 @@ const handleScroll = () => {
 
   lastScrollY.value = currentScrollY;
 };
-
-// const closeMobileMenu = () => {
-//   mobileMenuOpen.value = false;
-//   document.body.classList.remove('no-scroll');
-//   closeBottomDrawer();
-//   mobileFocusTrapInstance?.deactivate();
-// };
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
@@ -98,19 +85,68 @@ onBeforeUnmount(() => {
           <BaseLogo class="header__logo" />
         </NuxtLink>
 
-        <!-- Hamburger menu -->
+        <!-- Hamburger toggler (outside trap, focus returns here after close) -->
         <button
           class="header__mobile-toggler"
           aria-label="Toggle navigation menu"
-          @click="toggleMobileMenu"
+          aria-controls="mobile-menu"
           :aria-expanded="mobileMenuOpen.toString()"
-          :aria-controls="'mobile-menu'"
-          :class="{ 'is-active': mobileMenuOpen }"
+          :aria-haspopup="true"
+          :aria-pressed="mobileMenuOpen.toString()"
+          @click="toggleMobileMenu"
+          :class="{
+            'is-active': mobileMenuOpen,
+          }"
         >
-          <span class="hamburger"></span>
+          <span
+            class="hamburger"
+            :class="{ 'header__mobile-toggler--active': mobileMenuOpen }"
+            aria-hidden="true"
+          ></span>
         </button>
 
-        <!-- Desktop menu -->
+        <!-- Mobile menu -->
+        <Transition name="mobile-menu-slide-right">
+          <navigation
+            v-show="mobileMenuOpen"
+            class="header__nav header__nav--mobile"
+            aria-label="Hovednavigation"
+            id="mobile-menu"
+            ref="mobileMenuRef"
+            role="dialog"
+            :aria-hidden="(!mobileMenuOpen).toString()"
+          >
+            <div
+              ref="mobileMenuWrapperRef"
+              class="header__mobile-focus-wrapper"
+            >
+              <div class="header__mobile-header">
+                <BaseLogo class="header__logo header__logo--mobile" />
+                <button
+                  class="header__mobile-close"
+                  aria-label="Close navigation menu"
+                  @click="toggleMobileMenu"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div class="header__nav-items-wrapper">
+                <MobileHeaderItem
+                  v-for="(item, index) in data?.items || []"
+                  :key="index"
+                  :node="item"
+                  class="header__nav-item header__nav-item--mobile"
+                  @close-menu="mobileMenuOpen = false"
+                >
+                  {{ item?.title }}
+                </MobileHeaderItem>
+              </div>
+            </div>
+          </navigation>
+        </Transition>
+
+        <!-- Desktop navigation -->
         <navigation
           class="header__nav header__nav--desktop"
           role="navigation"
@@ -125,24 +161,6 @@ onBeforeUnmount(() => {
           >
             {{ item?.title }}
           </HeaderItem>
-        </navigation>
-
-        <!-- Mobile menu -->
-        <navigation
-          v-show="mobileMenuOpen"
-          class="header__nav header__nav--mobile"
-          aria-label="Hovednavigation"
-        >
-          <h2>mobile menu open</h2>
-          <!-- <MobileHeaderItem
-              v-for="(item, index) in data?.items || []"
-              :key="index"
-              :node="item"
-              class="header__nav-item header__nav-item--mobile"
-              @close-mobile-drawer="closeMobileMenu()"
-            >
-              {{ item?.title }}
-            </MobileHeaderItem> -->
         </navigation>
       </div>
     </div>
@@ -189,13 +207,58 @@ onBeforeUnmount(() => {
     &--mobile {
       position: fixed;
       top: 0;
-      height: 100vh;
       left: 0;
+      right: 0;
+      bottom: 0;
+      height: 100vh;
+      height: 100dvh;
       width: 100%;
-      background: #656565;
+      background: #313131;
       flex-direction: column;
-      padding: 20px;
+      padding: 0;
+      align-items: stretch;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
     }
+  }
+
+  &__mobile-focus-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__mobile-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #313131;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__mobile-close {
+    background: none;
+    border: none;
+    color: var(--color-white);
+    cursor: pointer;
+    color: #313131;
+  }
+
+  &__nav-items-wrapper {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
   }
 
   &__nav-item {
@@ -223,10 +286,12 @@ onBeforeUnmount(() => {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px;
-    margin-left: 12px;
     position: relative;
     z-index: 1100;
+
+    &--active {
+      transform: translate(0, 7px);
+    }
   }
 }
 
@@ -248,6 +313,7 @@ onBeforeUnmount(() => {
 .header__mobile-toggler.is-active .hamburger::before,
 .header__mobile-toggler.is-active .hamburger::after {
   background-color: var(--color-white);
+  margin-top: 2px;
 }
 
 .hamburger::before,
@@ -288,5 +354,13 @@ onBeforeUnmount(() => {
   .header__mobile-toggler {
     display: block;
   }
+}
+
+:global(body.no-scroll) {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
 }
 </style>

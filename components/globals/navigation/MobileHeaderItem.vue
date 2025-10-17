@@ -1,234 +1,322 @@
 <script setup>
 const props = defineProps({
-  node: {
-    type: Object,
-    required: false,
-  },
+  node: { type: Object, required: true },
+  level: { type: Number, default: 0 },
 });
 
-const currentDrawerKey = inject('currentDrawerKey', ref(null));
+const route = useRoute();
+const emit = defineEmits(['close-menu']);
+const submenuRef = ref(null);
+const isOpen = ref(false);
 
-const hasChildren = computed(() => {
-  const { below } = props.node || {};
-  return below && below.length > 0;
-});
-
-const isActiveDrawerItem = computed(
-  () => currentDrawerKey.value === props.node?.title,
+const hasChildren = computed(
+  () => Array.isArray(props.node?.below) && props.node.below.length > 0,
 );
 
-const closeDrawer = () => {
-  currentDrawerKey.value = null;
-};
+const nodeId = computed(() => {
+  if (props.node.url) {
+    return 'mobile-node-' + props.node.url.replace(/\W+/g, '-');
+  }
+  return 'mobile-node-' + props.node.title.replace(/\W+/g, '-');
+});
 
-const handleClick = () => {
-  if (!props.node) return;
+const isActive = computed(() => {
+  const currentPath = route.path;
+  const currentNodePath =
+    typeof props.node.url === 'string'
+      ? props.node.url
+      : props.node.url?.path || props.node.url?.to || '';
 
-  const key = props.node.title;
+  const hasActiveDescendant = (node) => {
+    if (!node) return false;
 
-  if (hasChildren.value) {
-    if (currentDrawerKey.value === key) {
-      closeDrawer();
-    } else {
-      currentDrawerKey.value = key;
+    const nodePath =
+      typeof node.url === 'string'
+        ? node.url
+        : node.url?.path || node.url?.to || '';
+
+    if (nodePath && nodePath === currentPath) {
+      return true;
     }
+
+    if (Array.isArray(node.below)) {
+      return node.below.some((child) => hasActiveDescendant(child));
+    }
+
+    return false;
+  };
+
+  if (currentNodePath) {
+    return currentNodePath === currentPath;
+  }
+
+  return hasActiveDescendant(props.node);
+});
+
+const toggleMenu = () => {
+  if (hasChildren.value) {
+    isOpen.value = !isOpen.value;
   }
 };
 
-const emit = defineEmits(['closeMobileDrawer']);
-const closeMobileDrawer = () => {
-  currentDrawerKey.value = null;
-  emit('closeMobileDrawer');
+const handleLinkClick = () => {
+  isOpen.value = false;
+  emit('close-menu');
+};
+
+// Close all nested menus on route change
+const router = useRouter();
+router.afterEach(() => {
+  nextTick(() => {
+    isOpen.value = false;
+    emit('close-menu');
+  });
+});
+
+// Dynamic height transitions
+const enterSubmenu = (el) => {
+  el.style.maxHeight = '0';
+  el.style.opacity = '0';
+  el.style.transform = 'scaleY(0.92) translateY(-10px)';
+  nextTick(() => {
+    el.style.transition =
+      'max-height 0.6s cubic-bezier(0.25, 1.2, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1.2, 0.5, 1), opacity 0.45s ease-out';
+    el.style.maxHeight = el.scrollHeight + 'px';
+    el.style.opacity = '1';
+    el.style.transform = 'scaleY(1) translateY(0)';
+  });
+};
+
+const leaveSubmenu = (el) => {
+  el.style.maxHeight = el.scrollHeight + 'px';
+  nextTick(() => {
+    el.style.transition =
+      'max-height 0.6s cubic-bezier(0.25, 1.2, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1.2, 0.5, 1), opacity 0.45s ease-out';
+    el.style.maxHeight = '0';
+    el.style.opacity = '0';
+    el.style.transform = 'scaleY(0.92) translateY(-10px)';
+  });
 };
 </script>
 
 <template>
-  <div class="header-item">
-    <div class="header-item__item">
+  <div class="mobile-nav-item" :class="`mobile-nav-item--level-${level}`">
+    <div class="mobile-nav-item__wrapper" :class="{ 'is-active': isActive }">
+      <!-- Link only (no children) -->
       <NuxtLink
         v-if="node?.url && !hasChildren"
-        :to="node?.url"
+        :to="node.url"
         :target="node?.url_options?.attributes?.target"
-        class="header-item__link header-item__link--link"
-        :aria-label="'Visit ' + node?.title"
-        @click="closeMobileDrawer()"
+        class="mobile-nav-item__link"
+        @click="handleLinkClick"
       >
-        {{ node?.title }}
+        <span class="mobile-nav-item__text">{{ node.title }}</span>
       </NuxtLink>
 
+      <!-- Button with optional link (has children) -->
       <button
-        v-else-if="hasChildren"
-        class="header-item__trigger"
-        :class="{ 'is-active': isActiveDrawerItem }"
+        v-else
+        class="mobile-nav-item__button"
         type="button"
-        @click="handleClick"
-        :aria-label="node?.title + ' - Open submenu'"
+        :aria-expanded="isOpen.toString()"
+        :aria-controls="hasChildren ? 'submenu-' + nodeId : undefined"
+        @click="toggleMenu"
       >
-        <span
-          class="header-item__link"
-          :class="{ 'is-active': isActiveDrawerItem }"
-        >
-          {{ node?.title }}
+        <span class="mobile-nav-item__content">
+          <NuxtLink
+            v-if="node?.url"
+            :to="node.url"
+            :target="node?.url_options?.attributes?.target"
+            class="mobile-nav-item__link-text"
+            @click.stop="handleLinkClick"
+          >
+            <span class="mobile-nav-item__text">{{ node.title }}</span>
+          </NuxtLink>
+
+          <span v-else class="mobile-nav-item__text">{{ node.title }}</span>
         </span>
+
         <NuxtIcon
-          class="button__icon-after"
-          :class="{ 'button__icon-after--rotated': isActiveDrawerItem }"
+          v-if="hasChildren"
           name="chevron-down"
-          fill
+          class="mobile-nav-item__icon"
+          :class="{
+            'mobile-nav-item__icon--open': isOpen,
+            'mobile-nav-item__icon--inline': level > 0,
+          }"
         />
       </button>
-
-      <span
-        v-else
-        class="header-item__link"
-        :aria-label="node?.title"
-        @click="closeDrawer"
-      >
-        {{ node?.title }}
-      </span>
     </div>
 
-    <Transition name="accordion">
+    <!--  submenu with dynamic height -->
+    <Transition @enter="enterSubmenu" @leave="leaveSubmenu" css>
       <div
-        v-if="hasChildren && isActiveDrawerItem"
-        class="header-item__children header-item__children--active"
+        v-if="hasChildren && isOpen"
+        ref="submenuRef"
+        class="mobile-nav-item__submenu"
+        :id="'submenu-' + nodeId"
       >
-        <MobileHeaderItem
-          v-for="(child, i) in node?.below"
-          :key="i"
-          :node="child"
-          class="header-item__child"
-          @closeMobileDrawer="closeMobileDrawer"
-        />
+        <div class="mobile-nav-item__submenu-scroll">
+          <MobileHeaderItem
+            v-for="child in node.below"
+            :key="child.id"
+            :node="child"
+            :level="level + 1"
+            @close-menu="emit('close-menu')"
+          />
+        </div>
       </div>
     </Transition>
   </div>
 </template>
 
 <style lang="postcss" scoped>
-.header-item {
-  position: relative;
+.mobile-nav-item {
+  width: 100%;
+  flex-shrink: 0;
 
-  &__item {
+  &__wrapper {
     position: relative;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
+    width: 100%;
   }
 
   &__link,
-  &__link--link {
-    position: relative;
-    display: inline-block;
-    padding-bottom: 2px;
-    line-height: 1.2;
-    color: var(--color-text);
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.2s;
-    white-space: nowrap;
-  }
-
-  &__link::after,
-  &__link--link::after {
-    content: '';
-    position: absolute;
-    left: 0;
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    bottom: 0;
-    height: 1px;
-    background-color: var(--color-primary);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: all 0.3s ease;
-    display: block;
-    box-sizing: border-box;
-  }
-
-  /* Active state */
-  &__link.is-active::after,
-  &__link--link.is-active::after,
-  .router-link-exact-active.header-item__link::after,
-  .router-link-exact-active.header-item__link--link::after {
-    transform: scaleX(1);
-  }
-
-  &__trigger {
-    position: relative;
-    padding-right: 22px;
-    padding-left: 0;
-    color: var(--color-text);
-    font-size: 16px;
+    padding: 16px 20px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-white);
+    opacity: 0.6;
+    font-size: 25px;
+    line-height: 1.3;
     background: none;
     border: none;
     cursor: pointer;
+    transition: background-color 0.2s ease;
+    position: relative;
+  }
+
+  &__button {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  &__content {
+    flex: 1;
     display: flex;
+    justify-content: center;
     align-items: center;
-    transition: border-color 0.3s ease;
-
-    .nuxt-icon {
-      position: absolute;
-      top: 50%;
-      right: 0;
-      transform: translateY(-50%);
-      transition: transform 0.3s ease;
-    }
   }
 
-  &__children {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition:
-      max-height 0.4s ease,
-      opacity 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-left: 16px;
+  &__link-text {
+    text-decoration: none;
+    color: inherit;
   }
 
-  &__children--active {
-    max-height: 1000px;
+  &__text {
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  &__wrapper.is-active &__text,
+  .router-link-exact-active &__text {
+    color: var(--color-white);
+    opacity: 1 !important;
+  }
+
+  &__wrapper.is-active &__link,
+  .router-link-exact-active &__link,
+  &__wrapper.is-active &__button,
+  .router-link-exact-active &__button {
     opacity: 1;
   }
 
-  &__child {
-    margin-bottom: 8px;
+  &__icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+    font-size: 20px;
+    flex-shrink: 0;
 
-    &:first-child {
-      padding-top: 5px;
+    &--open {
+      transform: translateY(-50%) rotate(180deg);
     }
+  }
 
-    &:last-child {
-      margin-bottom: 0;
+  &__icon--inline {
+    position: static;
+    margin-left: 15px;
+    display: inline-flex;
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+    transform: translateY(-2px);
+  }
+
+  &__icon--inline.mobile-nav-item__icon--open {
+    transform: rotate(180deg);
+  }
+
+  &__submenu {
+    background-color: #313131;
+    overflow: hidden;
+  }
+
+  /* Scrollable container inside submenu */
+  &__submenu-scroll {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+
+  &__submenu-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &__submenu-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+
+  &--level-1 {
+    .mobile-nav-item__link,
+    .mobile-nav-item__button {
+      justify-content: center;
+      font-size: 19px;
+    }
+  }
+
+  &--level-2 {
+    .mobile-nav-item__link,
+    .mobile-nav-item__button {
+      justify-content: center;
+      font-size: 17px;
+    }
+  }
+
+  &--level-3 {
+    .mobile-nav-item__link,
+    .mobile-nav-item__button {
+      justify-content: center;
+      font-size: 16px;
     }
   }
 }
 
-.button__icon-after--rotated {
-  transform: translateY(-50%) rotate(180deg) !important;
-  transition: transform 0.3s ease;
-}
-
-.accordion-enter-from,
-.accordion-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-
-.accordion-enter-active,
-.accordion-leave-active {
-  transition:
-    max-height 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.accordion-enter-to,
-.accordion-leave-from {
-  max-height: 1000px;
-  opacity: 1;
+/* Nested levels: align text + arrow inline */
+.mobile-nav-item--level-1 .mobile-nav-item__content,
+.mobile-nav-item--level-2 .mobile-nav-item__content,
+.mobile-nav-item--level-3 .mobile-nav-item__content {
+  flex: unset; /* remove flex-grow */
+  justify-content: flex-start; /* align text and inline arrow from left */
 }
 </style>

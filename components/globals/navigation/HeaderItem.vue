@@ -367,7 +367,7 @@ router.afterEach(() => {
     &--nested {
       top: 0;
       left: 100%;
-      margin-left: 8px;
+      margin-left: 5px;
       overflow: hidden;
     }
 
