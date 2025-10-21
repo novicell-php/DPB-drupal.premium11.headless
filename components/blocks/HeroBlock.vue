@@ -1,7 +1,49 @@
-<script setup>
-const props = defineProps({
-  blockData: Object,
-});
+<script setup lang="ts">
+interface callToAction {
+  title: string;
+  url: string;
+  class: 'button--normal' | 'button--link' | string;
+  target: '_blank' | '_self' | '';
+}
+
+interface HeroBlockData {
+  bundle: 'hero';
+  entity_type: 'block_content';
+  field_background:
+    | {
+        bundle: string;
+        entity_type: 'media';
+        field_media_oembed_video: {
+          height: number;
+          html: string;
+          provider: string;
+          resource_type: string;
+          src: string;
+          thumbnail: string;
+          title: string;
+          width: number;
+        };
+        id: string;
+        label: string;
+        transform_mode: string;
+        type: 'entity';
+      }
+    | string
+    | null;
+  field_color_theme: string[];
+  field_cta: callToAction | null;
+  field_overlay: boolean;
+  field_text: string | null;
+  field_text_position: 'hero--left' | 'hero--center' | 'hero--right';
+  field_title: string;
+  id: string;
+  transform_mode: string;
+  type: 'entity';
+}
+
+const props = defineProps<{
+  blockData: HeroBlockData;
+}>();
 
 // Checking if overlay is turned on without image
 const isDarkText = computed(() => {
@@ -16,15 +58,51 @@ const isDarkBg = computed(() => {
     props.blockData?.field_overlay && props.blockData?.field_background === null
   );
 });
+
+// Check if theme overlay should be applied
+const hasThemeOverlay = computed(() => {
+  return (
+    props.blockData?.field_overlay && props.blockData?.field_background !== null
+  );
+});
+
+const themeClasses = computed(() => {
+  return typeof props.blockData?.field_color_theme === 'object'
+    ? props.blockData?.field_color_theme
+    : '';
+});
+
+const isVideo = computed(() => {
+  if (
+    typeof props.blockData?.field_background === 'object' &&
+    props.blockData?.field_background !== null
+  ) {
+    return props.blockData?.field_background.bundle === 'remote_video';
+  }
+  return false;
+});
 </script>
 
 <template>
-  <div class="hero" :class="{ 'hero--dark': isDarkBg }">
+  <div
+    class="hero"
+    :class="[
+      ...themeClasses,
+      { 'hero--video': isVideo },
+      { 'hero--dark': isDarkBg },
+    ]"
+  >
     <BaseMedia
       class="hero__media"
       :block-data="blockData"
       :component-type-class="blockData?.bundle"
-      loading="eager"
+      :loading="isVideo ? 'eager' : 'lazy'"
+      :is-background="isVideo"
+    />
+    <div
+      v-if="hasThemeOverlay"
+      class="hero__overlay"
+      :class="!themeClasses ? 'hero__overlay--no-theme' : ''"
     />
     <div
       class="hero__content"
@@ -33,15 +111,22 @@ const isDarkBg = computed(() => {
         { 'hero__content--dark': isDarkText },
       ]"
     >
-      <div v-if="blockData.field_text !== null" class="hero__text">
-        <BaseRte :content="blockData.field_text" />
+      <div
+        v-if="blockData.field_text !== null || blockData.field_title"
+        class="hero__text"
+      >
+        <h1 v-if="blockData.field_title">{{ blockData.field_title }}</h1>
+        <BaseRte
+          v-if="blockData.field_text !== null"
+          :content="blockData.field_text"
+        />
       </div>
       <BaseButton
         v-if="blockData.field_cta !== null"
         :button-data="blockData.field_cta"
         :link="
-          blockData.field_cta?.class &&
-          blockData.field_cta?.class != 'button--normal'
+          typeof blockData.field_cta?.class === 'string' &&
+          blockData.field_cta?.class !== 'button--normal'
         "
         :color="blockData.field_cta?.class == 'button--normal' ? '' : 'white'"
       />
@@ -70,6 +155,24 @@ const isDarkBg = computed(() => {
     }
   }
 
+  &--video {
+    padding: 0;
+    height: 100vh;
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+
+    @media (--viewport-md-min) {
+      margin-bottom: 0;
+    }
+
+    .hero__content {
+      transform: translateY(10%);
+      padding: 10px var(--grid-gutter);
+      margin: 0 var(--grid-gutter) @(--sm) 0;
+    }
+  }
+
   &--left {
     text-align: left;
   }
@@ -89,6 +192,21 @@ const isDarkBg = computed(() => {
       left: 0;
       width: 100%;
       height: 100%;
+    }
+  }
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--theme-background-color);
+    opacity: 0.3;
+    z-index: 0;
+
+    &--no-theme {
+      background-color: var(--color-black);
     }
   }
 
