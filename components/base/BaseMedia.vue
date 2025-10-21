@@ -10,6 +10,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  isBackground: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 </script>
 
@@ -29,6 +34,7 @@ const props = defineProps({
       :video="blockData.field_background"
       :component-type-class="blockData.bundle"
       :autoplay="autoplay"
+      :is-background="isBackground"
     />
   </div>
 </template>

@@ -14,7 +14,7 @@ const props = defineProps({
   },
 });
 
-const processedIsOverlay = computed(() => {
+const IsOverlay = computed(() => {
   return props.isOverlay ? 'image--overlay' : '';
 });
 
@@ -29,7 +29,7 @@ const processedComponentTypeClass = computed(() => {
 
 <template>
   <figure class="image">
-    <picture :class="[processedIsOverlay + ' ' + processedComponentTypeClass]">
+    <picture :class="[IsOverlay + ' ' + processedComponentTypeClass]">
       <template
         v-for="(el, index) in image?.field_media_image?.sources"
         :key="index"
@@ -78,10 +78,6 @@ const processedComponentTypeClass = computed(() => {
     width: 100%;
     height: auto;
     object-fit: cover;
-  }
-
-  &--overlay {
-    filter: brightness(0.6);
   }
 
   &__caption {
