@@ -11,6 +11,10 @@ const props = defineProps({
   },
 });
 
+const isPlaying = ref(true);
+const videoContainerRef = ref(null);
+const iframeRef = ref(null);
+
 const iframeHtml = computed(() => {
   if (!props.video?.field_media_oembed_video?.html) return '';
 
@@ -21,7 +25,6 @@ const iframeHtml = computed(() => {
     html = html.replace(/src="([^"]+)"/, (match, url) => {
       let newUrl = url;
       const separator = url.includes('?') ? '&' : '?';
-      // YouTube parameters
       const params = [
         'autoplay=1',
         'mute=1',
@@ -32,9 +35,12 @@ const iframeHtml = computed(() => {
         'modestbranding=1',
         'rel=0',
         'showinfo=0',
+        'enablejsapi=1',
+        'autohide=1',
+        'iv_load_policy=3',
+        'widget_referrer=0',
       ].join('&');
 
-      // Ensure continuous looping for YouTube by adding playlist param
       let playlistParam = '';
       // Check if the URL is for YouTube
       if (/youtube\.com|youtu\.be/.test(url)) {
@@ -63,11 +69,42 @@ const iframeHtml = computed(() => {
       html = html.replace('<iframe', '<iframe allow="autoplay; muted"');
     }
 
-    // Add pointer-events: none style to iframe
     html = html.replace('<iframe', '<iframe style="pointer-events: none;"');
   }
 
   return html;
+});
+
+const togglePlayPause = () => {
+  const iframe = videoContainerRef.value?.querySelector('iframe');
+  if (!iframe) return;
+
+  const command = isPlaying.value ? 'pauseVideo' : 'playVideo';
+  iframe.contentWindow.postMessage(
+    JSON.stringify({
+      event: 'command',
+      func: command,
+    }),
+    '*',
+  );
+
+  isPlaying.value = !isPlaying.value;
+};
+
+watch(
+  () => iframeHtml.value,
+  () => {
+    if (videoContainerRef.value) {
+      iframeRef.value = videoContainerRef.value.querySelector('iframe');
+    }
+  },
+  { flush: 'post' },
+);
+
+onMounted(() => {
+  if (videoContainerRef.value) {
+    iframeRef.value = videoContainerRef.value.querySelector('iframe');
+  }
 });
 </script>
 
@@ -75,15 +112,36 @@ const iframeHtml = computed(() => {
   <div class="video-base" :class="{ 'video-base--background': isBackground }">
     <div
       v-if="props.video.bundle == 'remote_video'"
+      ref="videoContainerRef"
       class="video-base__iframe"
+      :aria-hidden="isBackground ? 'true' : undefined"
       v-html="iframeHtml"
     ></div>
-    <div v-else>{{ props.video.bundle }} not implemented</div>
+    <div v-else>{{ props.video.bundle }} source not implemented</div>
+
+    <button
+      v-if="isBackground"
+      @click="togglePlayPause"
+      class="video-control"
+      :aria-label="
+        isPlaying ? 'Pause background video' : 'Play background video'
+      "
+      type="button"
+    >
+      <span class="video-control__icon" aria-hidden="true">
+        {{ isPlaying ? '⏸' : '▶' }}
+      </span>
+      <span class="video-control__text">
+        {{ isPlaying ? 'Pause' : 'Play' }}
+      </span>
+    </button>
   </div>
 </template>
 
 <style lang="postcss" scoped>
 .video-base {
+  position: relative;
+
   &__iframe {
     position: relative;
     padding-top: 56.25%;
@@ -104,12 +162,16 @@ const iframeHtml = computed(() => {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 420px;
+
+    @media (min-width: 640px) {
+      height: 100%;
+    }
 
     .video-base__iframe {
-      padding-top: 0;
       width: 100%;
       height: 100%;
+      padding-top: 0;
 
       :deep(iframe) {
         width: 100vw;
@@ -131,6 +193,73 @@ const iframeHtml = computed(() => {
         }
       }
     }
+  }
+}
+
+.video-control {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 12px 20px;
+
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  color: white;
+
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: 3px solid #4a9eff;
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &__icon {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  &__text {
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+}
+
+/* Respect user's motion preferences - WCAG 2.3.3 */
+@media (prefers-reduced-motion: reduce) {
+  .video-base--background {
+    .video-base__iframe {
+      :deep(iframe) {
+        display: none;
+      }
+    }
+  }
+
+  .video-control {
+    display: none;
   }
 }
 </style>
