@@ -211,8 +211,9 @@ onBeforeUnmount(() => {
   }
 
   &__logo {
-    width: 120px;
-    height: auto;
+    &--mobile {
+      background-color: var(--color-white) !important;
+    }
   }
 
   &__nav {

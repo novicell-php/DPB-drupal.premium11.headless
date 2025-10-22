@@ -157,8 +157,7 @@ const isVideo = computed(() => {
 
   &--video {
     padding: 0;
-    height: 100vh;
-    min-height: 500px;
+    height: 420px @(--sm) 100vh;
     display: flex;
     justify-content: center;
 

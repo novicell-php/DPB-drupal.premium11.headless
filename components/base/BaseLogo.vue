@@ -1,13 +1,15 @@
 <template>
-  <div class="base-logo">
-    <img src="~/assets/img/logo.svg" alt="logo" />
-  </div>
+  <div class="base-logo"></div>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .base-logo {
-  img {
-    height: 50px;
-  }
+  width: 100px;
+  height: 50px;
+  background-color: var(--theme-text-color);
+  mask: url('~/assets/img/logo.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('~/assets/img/logo.svg') no-repeat center;
+  -webkit-mask-size: contain;
 }
 </style>
