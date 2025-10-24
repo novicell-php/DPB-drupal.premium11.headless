@@ -69,7 +69,10 @@ const iframeHtml = computed(() => {
       html = html.replace('<iframe', '<iframe allow="autoplay; muted"');
     }
 
-    html = html.replace('<iframe', '<iframe style="pointer-events: none;"');
+    html = html.replace(
+      '<iframe',
+      '<iframe style="pointer-events: none;" tabindex="-1"',
+    );
   }
 
   return html;
@@ -119,19 +122,30 @@ onMounted(() => {
     ></div>
     <div v-else>{{ props.video.bundle }} source not implemented</div>
 
+    <!-- Overlay to hide suggested videos when paused -->
+    <Transition name="video-overlay-fade">
+      <div
+        v-if="isBackground && !isPlaying"
+        class="video-base__overlay"
+        aria-hidden="true"
+      ></div>
+    </Transition>
+
     <button
       v-if="isBackground"
       @click="togglePlayPause"
-      class="video-control"
+      class="video-base__control"
       :aria-label="
         isPlaying ? 'Pause background video' : 'Play background video'
       "
       type="button"
     >
-      <span class="video-control__icon" aria-hidden="true">
-        {{ isPlaying ? '⏸' : '▶' }}
-      </span>
-      <span class="video-control__text">
+      <ClientOnly>
+        <span class="video-base__control-icon" aria-hidden="true">
+          <NuxtIcon :name="isPlaying ? 'pause' : 'play'" />
+        </span>
+      </ClientOnly>
+      <span class="video-base__control-text">
         {{ isPlaying ? 'Pause' : 'Play' }}
       </span>
     </button>
@@ -194,58 +208,90 @@ onMounted(() => {
       }
     }
   }
-}
 
-.video-control {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10;
-
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  padding: 12px 20px;
-
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  color: white;
-
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.85);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: scale(1.05);
+  &__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 15%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(18px);
+    z-index: 5;
+    pointer-events: none;
+    display: none @(--sm) block;
   }
 
-  &:focus {
-    outline: 3px solid #4a9eff;
-    outline-offset: 2px;
+  &__control {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.85);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    &:focus {
+      outline: 3px solid #4a9eff;
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
   }
 
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &__icon {
+  &__control-icon {
     font-size: 16px;
     line-height: 1;
   }
 
-  &__text {
+  &__control-text {
     @media (max-width: 480px) {
       display: none;
     }
   }
+}
+
+/* Overlay fade transition */
+.video-overlay-fade-enter-active {
+  transition:
+    opacity 0.1s ease-in-out,
+    backdrop-filter 0.1s ease-in-out;
+}
+
+.video-overlay-fade-leave-active {
+  transition:
+    opacity 0.8s ease-in-out,
+    backdrop-filter 0.8s ease-in-out;
+}
+
+.video-overlay-fade-enter-from,
+.video-overlay-fade-leave-to {
+  opacity: 0;
+  backdrop-filter: blur(0px);
+}
+
+.video-overlay-fade-enter-to,
+.video-overlay-fade-leave-from {
+  opacity: 1;
+  backdrop-filter: blur(18px);
 }
 
 /* Respect user's motion preferences - WCAG 2.3.3 */
@@ -258,8 +304,13 @@ onMounted(() => {
     }
   }
 
-  .video-control {
+  .video-base__control {
     display: none;
+  }
+
+  .video-overlay-fade-enter-active,
+  .video-overlay-fade-leave-active {
+    transition: none;
   }
 }
 </style>
