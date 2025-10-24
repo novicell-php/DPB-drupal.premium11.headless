@@ -4,6 +4,11 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  autoplay: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   isBackground: {
     type: Boolean,
     required: false,
@@ -73,6 +78,18 @@ const iframeHtml = computed(() => {
       '<iframe',
       '<iframe style="pointer-events: none;" tabindex="-1"',
     );
+  } else if (props.autoplay) {
+    // Add autoplay parameters for non-background videos
+    html = html.replace(/src="([^"]+)"/, (match, url) => {
+      const separator = url.includes('?') ? '&' : '?';
+      const params = ['autoplay=1', 'mute=0', 'playsinline=1'].join('&');
+      return `src="${url}${separator}${params}"`;
+    });
+
+    // Add allow attribute for autoplay
+    if (!html.includes('allow=')) {
+      html = html.replace('<iframe', '<iframe allow="autoplay;"');
+    }
   }
 
   return html;
