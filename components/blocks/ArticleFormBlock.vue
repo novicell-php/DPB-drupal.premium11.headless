@@ -34,6 +34,56 @@ const content = computed(() =>
     : props.blockData.field_articles_form.content.content,
 );
 
+// Helper function to check if a filter should be in the top section
+const isTopFilter = (key, facet) => {
+  const keyLower = key.toLowerCase();
+  const titleLower = facet.title?.toLowerCase() || '';
+
+  return (
+    keyLower.includes('page_size') ||
+    keyLower.includes('pagesize') ||
+    keyLower.includes('sort') ||
+    titleLower.includes('page size') ||
+    titleLower.includes('sort')
+  );
+};
+
+// Helper function to determine filter position
+const isSortFilter = (key, facet) => {
+  const keyLower = key.toLowerCase();
+  const titleLower = facet.title?.toLowerCase() || '';
+  return keyLower.includes('sort') || titleLower.includes('sort');
+};
+
+// Separate facets into sidebar and top filters
+const sidebarFacets = computed(() => {
+  const sidebar = {};
+  Object.entries(facets).forEach(([key, value]) => {
+    if (!isTopFilter(key, value)) {
+      sidebar[key] = value;
+    }
+  });
+  return sidebar;
+});
+
+const topFacets = computed(() => {
+  const sortFilters = {};
+  const pageSizeFilters = {};
+
+  Object.entries(facets).forEach(([key, value]) => {
+    if (isTopFilter(key, value)) {
+      if (isSortFilter(key, value)) {
+        sortFilters[key] = value;
+      } else {
+        pageSizeFilters[key] = value;
+      }
+    }
+  });
+
+  // Return sort filters first, then page size filters
+  return { ...sortFilters, ...pageSizeFilters };
+});
+
 const handlePager = (page) => {
   state.value.page = page;
 
@@ -112,71 +162,109 @@ const updateContent = async () => {
 <template>
   <div class="article-overview" :id="id">
     <div class="article-overview__container">
-      <div class="article-overview__filters">
-        <div v-for="(facet, key) in facets" :key="key" class="facet">
-          <label class="facet__title">{{ facet.title }}</label>
-
-          <div v-if="facet.type === 'search'">
-            <input
-              class="facet__input"
-              type="text"
-              v-model="state[key]"
-              placeholder="Search terms"
-            />
-          </div>
-
-          <!-- Checkboxes -->
-          <div v-else-if="facet.type === 'checkboxes'">
-            <label
-              v-for="opt in facet.options"
-              :key="opt.value"
-              class="facet__option"
-            >
-              <input
-                type="checkbox"
-                :value="opt.key"
-                v-model="state[key]"
-                class="facet__checkbox"
-              />
-              {{ opt.value }}
-            </label>
-          </div>
-
-          <!-- Select -->
-          <div v-else-if="facet.type === 'select'">
-            <select class="facet__select" v-model="state[key]">
-              <option
-                v-for="opt in facet.options"
-                :key="opt.key"
-                :value="opt.key"
-              >
-                {{ opt.value }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="article-overview__content">
+      <div class="article-overview__layout">
         <div
-          class="article-overview__cards"
-          :class="{
-            'article-overview__cards--loading': loading,
-            'article-overview__cards--empty': content.length === 0,
-          }"
+          v-if="Object.keys(sidebarFacets).length > 0"
+          class="article-overview__filters"
         >
-          <template v-if="content.length === 0">
-            <div class="article-overview__no-articles">No articles found.</div>
-          </template>
-          <template v-else>
-            <BaseArticle
-              v-for="item in content"
-              :key="item.id"
-              :blockData="item"
-            />
-          </template>
+          <div v-for="(facet, key) in sidebarFacets" :key="key" class="facet">
+            <label class="facet__title">{{ facet.title }}</label>
+
+            <div v-if="facet.type === 'search'">
+              <input
+                class="facet__input"
+                type="text"
+                v-model="state[key]"
+                placeholder="Search terms"
+              />
+            </div>
+
+            <!-- Checkboxes -->
+            <div v-else-if="facet.type === 'checkboxes'">
+              <label
+                v-for="opt in facet.options"
+                :key="opt.value"
+                class="facet__option"
+              >
+                <input
+                  type="checkbox"
+                  :value="opt.key"
+                  v-model="state[key]"
+                  class="facet__checkbox"
+                />
+                {{ opt.value }}
+              </label>
+            </div>
+
+            <!-- Select -->
+            <div v-else-if="facet.type === 'select'">
+              <select class="facet__select" v-model="state[key]">
+                <option
+                  v-for="opt in facet.options"
+                  :key="opt.key"
+                  :value="opt.key"
+                >
+                  {{ opt.value }}
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
-        <BaseLoading v-if="loading" class="article-overview__loading" />
+        <div class="article-overview__content">
+          <!-- Top filters for Page Size and Sort By -->
+          <div
+            v-if="Object.keys(topFacets).length > 0"
+            class="article-overview__top-filters"
+          >
+            <div v-for="(facet, key) in topFacets" :key="key" class="top-facet">
+              <label class="top-facet__title">{{ facet.title }}</label>
+
+              <div v-if="facet.type === 'search'">
+                <input
+                  class="top-facet__input"
+                  type="text"
+                  v-model="state[key]"
+                  placeholder="Search terms"
+                />
+              </div>
+
+              <!-- Select -->
+              <div v-else-if="facet.type === 'select'">
+                <select class="top-facet__select" v-model="state[key]">
+                  <option
+                    v-for="opt in facet.options"
+                    :key="opt.key"
+                    :value="opt.key"
+                  >
+                    {{ opt.value }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="article-overview__cards"
+            :class="{
+              'article-overview__cards--loading': loading,
+              'article-overview__cards--empty': content.length === 0,
+            }"
+          >
+            <template v-if="content.length === 0">
+              <div class="article-overview__no-articles">
+                No articles found.
+              </div>
+            </template>
+            <template v-else>
+              <BaseArticle
+                v-for="item in content"
+                :key="item.id"
+                :blockData="item"
+              />
+            </template>
+          </div>
+          <BaseLoading v-if="loading" class="article-overview__loading" />
+        </div>
       </div>
     </div>
 
@@ -192,11 +280,20 @@ const updateContent = async () => {
 .article-overview {
   position: relative;
 
-  &__filters {
+  &__layout {
     display: flex;
-    flex-wrap: wrap;
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  &__filters {
+    flex: 0 0 250px;
+    background-color: transparent;
+    padding: 20px;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
     gap: 30px;
-    padding: 30px 0;
   }
 
   .facet {
@@ -305,15 +402,63 @@ const updateContent = async () => {
 
   &__content {
     position: relative;
+    flex: 1;
+  }
+
+  &__top-filters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    @media (--viewport-sm-max) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .top-facet {
+    display: flex;
+    align-items: center;
+
+    &__title {
+      font-size: 16px;
+      color: var(--theme-text-color);
+      opacity: 0.7;
+    }
+
+    &__select {
+      padding: 5px 10px;
+      padding-right: 20px;
+      border: none;
+      cursor: pointer;
+      min-width: 50px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      color: var(--theme-text-color);
+      background-color: transparent;
+      background-image: url("data:image/svg+xml,%3csvg fill='none' height='8' viewBox='0 0 10 8' width='10' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M1 1l4 4 4-4' stroke='%23333' stroke-width='2'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1px center;
+      transition:
+        border 0.3s ease,
+        box-shadow 0.3s ease;
+
+      @media (--viewport-sm-max) {
+        width: 100%;
+      }
+    }
   }
 
   &__cards {
     display: grid;
     gap: 30px 15px;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
 
     @media (--viewport-lg-max) {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
     @media (--viewport-md-max) {
